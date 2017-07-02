@@ -180,7 +180,7 @@ public class PerpetualInventoryCrafting implements IInventory, IBlobsWrapper {
 		this.stacksList.clear();
 	}
 
-	/* INetworkChangesWrapper */
+	/* IBlobsWrapper */
 	@Override
 	public void loadBlobsTickets(EligiblePacketBuffer packet) throws IOException {
 		this.stacksList = packet.readItemStacks();
