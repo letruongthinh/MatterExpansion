@@ -1,0 +1,56 @@
+{
+	"forge_marker": 1,
+    "defaults": {
+	    "model": "forge:item-layer",
+        "transform": "forge:default-item"
+    },
+	"variants": {
+		"type": {
+			"ingotNeon": {
+				"textures": {
+					"layer0": "matterexpansion:items/ingotNeon"
+				}
+			},
+			"ingotMega": {
+				"textures": {
+					"layer0": "matterexpansion:items/ingotMega"
+				}
+			},
+			"ingotDarkfire": {
+				"textures": {
+					"layer0": "matterexpansion:items/ingotDarkfire"
+				}
+			},
+			"nuggetNeon": {
+				"textures": {
+					"layer0": "matterexpansion:items/nuggetNeon"
+				}
+			},
+			"nuggetMega": {
+				"textures": {
+					"layer0": "matterexpansion:items/nuggetMega"
+				}
+			},
+			"nuggetDarkfire": {
+				"textures": {
+					"layer0": "matterexpansion:items/nuggetDarkfire"
+				}
+			},
+			"dustNeon": {
+				"textures": {
+					"layer0": "matterexpansion:items/dustNeon"
+				}
+			},
+			"dustMega": {
+				"textures": {
+					"layer0": "matterexpansion:items/dustMega"
+				}
+			},
+			"dustDarkfire": {
+				"textures": {
+					"layer0": "matterexpansion:items/dustDarkfire"
+				}
+			}
+		}
+	}
+}
