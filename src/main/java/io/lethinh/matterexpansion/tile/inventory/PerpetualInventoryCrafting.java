@@ -36,7 +36,7 @@ import net.minecraft.util.text.TextComponentString;
 
 /**
  * This class is created in case if the inventory is cleared, it still has the
- * NBT and the packet blobs to retrieve the ItemStacks in blobs.
+ * saved NBT and the packet blobs to retrieve the ItemStacks in blobs.
  *
  * @author Le Thinh
  */
