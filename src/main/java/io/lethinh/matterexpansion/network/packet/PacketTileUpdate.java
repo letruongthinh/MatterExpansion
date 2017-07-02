@@ -33,17 +33,20 @@ import net.minecraft.util.math.BlockPos;
 public class PacketTileUpdate extends GenericPacketClientToServer {
 
 	private BlockPos pos;
+	private NBTTagCompound tag;
 
 	public PacketTileUpdate() {
 	}
 
-	public PacketTileUpdate(BlockPos pos) {
+	public PacketTileUpdate(BlockPos pos, NBTTagCompound tag) {
 		this.pos = pos;
+		this.tag = tag;
 	}
 
 	@Override
 	protected void handleServerDelegate(NetHandlerPlayServer server) {
 		final TileEntity tile = server.playerEntity.world.getTileEntity(this.pos);
+		Validate.notNull(tile);
 
 		if (tile instanceof IBlobsWrapper) {
 			try {
@@ -59,11 +62,13 @@ public class PacketTileUpdate extends GenericPacketClientToServer {
 	@Override
 	public void loadBlobsTickets(EligiblePacketBuffer packet) throws IOException {
 		this.pos = packet.readBlockPos();
+		this.tag = packet.readCompoundTag();
 	}
 
 	@Override
 	public void saveBlobsTickets(EligiblePacketBuffer packet) throws IOException {
 		packet.writeBlockPos(this.pos);
+		packet.writeCompoundTag(this.tag);
 	}
 
 }
