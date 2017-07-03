@@ -34,11 +34,10 @@ import net.minecraft.item.ItemStack;
 public abstract class GenericContainer<TE extends GenericTile> extends Container {
 
 	protected final TE tile;
-	protected int playerInventoryStart;
+	protected int playerInventoryStart = -1;
 
 	public GenericContainer(TE tile, InventoryPlayer inventoryPlayer) {
 		this.tile = tile;
-		this.playerInventoryStart = -1;
 	}
 
 	@Nonnull
