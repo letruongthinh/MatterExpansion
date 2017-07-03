@@ -58,7 +58,6 @@ public abstract class GenericTile extends TileEntity implements IBlobsWrapper {
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		final NBTTagCompound compound = new NBTTagCompound();
 		this.writeToNBT(compound);
-		PacketHandler.sendToServer(new PacketTileUpdate(this.pos, compound));
 		return new SPacketUpdateTileEntity(this.pos, -1, compound);
 	}
 

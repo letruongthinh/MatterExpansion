@@ -27,6 +27,7 @@ import org.apache.commons.lang3.Validate;
 import io.lethinh.matterexpansion.MatterExpansion;
 import io.lethinh.matterexpansion.backend.utils.InventoryUtils;
 import io.lethinh.matterexpansion.backend.utils.ItemNBTUtils;
+import io.lethinh.matterexpansion.init.GuiHandler;
 import io.lethinh.matterexpansion.tile.GenericPowerTile;
 import io.lethinh.matterexpansion.tile.GenericTile;
 import net.minecraft.block.material.Material;
@@ -42,7 +43,6 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
  *
@@ -57,8 +57,6 @@ public abstract class GenericTileBlock<TE extends GenericTile> extends GenericBl
 		Validate.notNull(tile);
 
 		this.tile = tile;
-		GameRegistry.registerTileEntity(this.getTileClass(),
-				this.getUnlocalizedName().replace('.', '_').replaceAll("tile.", ""));
 	}
 
 	@Override
@@ -83,7 +81,7 @@ public abstract class GenericTileBlock<TE extends GenericTile> extends GenericBl
 		if (world.isRemote)
 			return true;
 		else {
-			player.openGui(MatterExpansion.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
+			player.openGui(MatterExpansion.instance, GuiHandler.GUI_ID, world, pos.getX(), pos.getY(), pos.getZ());
 			return true;
 		}
 	}

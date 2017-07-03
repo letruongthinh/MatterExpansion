@@ -38,8 +38,7 @@ public class WidgetFilledTank extends GenericWidget {
 	private static final ResourceLocation texFluidFull = StringUtils
 			.prefixResourceLocation("textures/gui/widgets/widget_energy_ful.png");
 
-	private int fluidAmount = 0;
-	private int capacity = 0;
+	private int fluidAmount, capacity = 0;
 
 	public WidgetFilledTank(int x, int y, int fluidAmount, int capacity) {
 		super(x, y, 18, 54);

@@ -57,7 +57,7 @@ public class ItemFireWand extends GenericEnergizedItem {
 		if (stack.isItemEqual(new ItemStack(this))
 				&& this.getEnergyStored(stack) >= Config.fireWandEnergyUseBase * Config.fireWandExplosionPower) {
 			final EntityPlayer player = (EntityPlayer) entityLiving;
-			final Vec3d playerLook = player.getForward();
+			final Vec3d playerLook = player.getLookVec();
 			final EntityLargeFireball fireball = new EntityLargeFireball(world, player, 0, 0, 0);
 
 			fireball.explosionPower = Config.fireWandExplosionPower;

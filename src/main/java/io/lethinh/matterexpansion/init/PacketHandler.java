@@ -16,6 +16,8 @@
 
 package io.lethinh.matterexpansion.init;
 
+import org.apache.commons.lang3.Validate;
+
 import io.lethinh.matterexpansion.MatterExpansion;
 import io.lethinh.matterexpansion.network.GenericPacket;
 import io.lethinh.matterexpansion.network.packet.PacketSyncCraftingInventory;
@@ -40,13 +42,12 @@ public class PacketHandler {
 
 	public static final String channelName = MatterExpansion.ModID + "Channel";
 	private static SimpleNetworkWrapper networkWrapper;
-	private static GenericPacketHandler handler;
+	private static GenericMessageHandler handler;
 	private static int id = 0;
 
 	public static void init() {
-		// NETWORK
 		PacketHandler.networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(channelName);
-		PacketHandler.handler = new GenericPacketHandler();
+		PacketHandler.handler = new GenericMessageHandler();
 
 		PacketHandler.registerServerPacketOnly(PacketTileUpdate.class);
 		PacketHandler.registerServerPacketOnly(PacketSyncCraftingInventory.class);
@@ -54,18 +55,26 @@ public class PacketHandler {
 
 	/* NETWORK */
 	public static void sendToAll(GenericPacket packet) {
+		Validate.notNull(packet);
 		networkWrapper.sendToAll(packet);
 	}
 
 	public static void sendToAllAround(GenericPacket packet, NetworkRegistry.TargetPoint point) {
+		Validate.notNull(packet);
+		Validate.notNull(point);
 		networkWrapper.sendToAllAround(packet, point);
 	}
 
 	public static void sendToServer(GenericPacket packet) {
+		Validate.notNull(packet);
 		networkWrapper.sendToServer(packet);
 	}
 
 	public static void sendToAllPlayers(WorldServer world, BlockPos pos, GenericPacket packet) {
+		Validate.notNull(world);
+		Validate.notNull(pos);
+		Validate.notNull(packet);
+
 		final Chunk chunk = world.getChunkFromBlockCoords(pos);
 		for (final EntityPlayer player : world.playerEntities) {
 			// only send to relevant players
@@ -81,29 +90,38 @@ public class PacketHandler {
 	}
 
 	public static void sendToPlayer(GenericPacket packet, EntityPlayerMP playerMP) {
+		Validate.notNull(packet);
+		Validate.notNull(playerMP);
 		networkWrapper.sendTo(packet, playerMP);
 	}
 
 	public static void registerPacket(Class<? extends GenericPacket> packetClazz) {
+		Validate.notNull(packetClazz);
 		registerClientPacketOnly(packetClazz);
 		registerServerPacketOnly(packetClazz);
 	}
 
 	public static void registerClientPacketOnly(Class<? extends GenericPacket> packetClazz) {
+		Validate.notNull(packetClazz);
 		registerMessagePacket(packetClazz, Side.CLIENT);
 	}
 
 	public static void registerServerPacketOnly(Class<? extends GenericPacket> packetClazz) {
+		Validate.notNull(packetClazz);
 		registerMessagePacket(packetClazz, Side.SERVER);
 	}
 
 	private static void registerMessagePacket(Class<? extends GenericPacket> packetClazz, Side side) {
-		networkWrapper.registerMessage(PacketHandler.handler, packetClazz, PacketHandler.id++, side);
+		Validate.notNull(packetClazz);
+		networkWrapper.registerMessage(handler, packetClazz, id++, side);
 	}
 
-	public static class GenericPacketHandler implements IMessageHandler<GenericPacket, IMessage> {
+	public static class GenericMessageHandler implements IMessageHandler<GenericPacket, IMessage> {
 		@Override
 		public IMessage onMessage(GenericPacket packet, MessageContext ctx) {
+			Validate.notNull(packet);
+			Validate.notNull(ctx);
+
 			if (ctx.side == Side.CLIENT)
 				return packet.handleClient(ctx.getClientHandler());
 			else

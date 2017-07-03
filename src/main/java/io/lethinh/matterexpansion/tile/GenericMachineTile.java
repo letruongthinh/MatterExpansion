@@ -40,7 +40,6 @@ public abstract class GenericMachineTile extends GenericPowerTile
 		implements ISidedInventory, ITickable {
 
 	protected NonNullList<ItemStack> stacks;
-	protected EnumFacing side;
 	protected long ticks;
 	protected boolean isActive, needsNetworkUpdate;
 	public int progress;
@@ -48,7 +47,6 @@ public abstract class GenericMachineTile extends GenericPowerTile
 	public GenericMachineTile(int size, String name) {
 		super(name);
 		this.stacks = NonNullList.withSize(size, ItemStack.EMPTY);
-		this.side = EnumFacing.NORTH;
 		this.ticks = 0;
 		this.isActive = false;
 		this.progress = -1;
@@ -59,7 +57,6 @@ public abstract class GenericMachineTile extends GenericPowerTile
 		super.readFromNBT(compound);
 
 		ItemStackHelper.loadAllItems(compound, this.stacks);
-		this.side = EnumFacing.values()[compound.getByte("Side")];
 		this.ticks = compound.getLong("Ticks");
 		this.progress = compound.getInteger("Progress");
 		this.isActive = compound.getBoolean("IsActive");
@@ -69,7 +66,6 @@ public abstract class GenericMachineTile extends GenericPowerTile
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		ItemStackHelper.saveAllItems(compound, this.stacks);
-		compound.setByte("Side", (byte) this.side.ordinal());
 		compound.setLong("Ticks", this.ticks);
 		compound.setInteger("Progress", this.progress);
 		compound.setBoolean("IsActive", this.isActive);
@@ -239,7 +235,6 @@ public abstract class GenericMachineTile extends GenericPowerTile
 	public void loadBlobsTickets(EligiblePacketBuffer packet) throws IOException {
 		super.loadBlobsTickets(packet);
 		this.stacks = packet.readItemStacks();
-		this.side = packet.readSide();
 		this.ticks = packet.readLong();
 		this.progress = packet.readInt();
 		this.isActive = packet.readBoolean();
@@ -250,7 +245,6 @@ public abstract class GenericMachineTile extends GenericPowerTile
 	public void saveBlobsTickets(EligiblePacketBuffer packet) throws IOException {
 		super.saveBlobsTickets(packet);
 		packet.writeItemStacks(this.stacks);
-		packet.writeSide(this.side);
 		packet.writeLong(this.ticks);
 		packet.writeInt(this.progress);
 		packet.writeBoolean(this.isActive);

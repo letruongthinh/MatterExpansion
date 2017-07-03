@@ -18,10 +18,13 @@ package io.lethinh.matterexpansion.network.packet;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.Validate;
+
 import io.lethinh.matterexpansion.MatterExpansion;
 import io.lethinh.matterexpansion.backend.helpers.IBlobsWrapper;
 import io.lethinh.matterexpansion.network.EligiblePacketBuffer;
 import io.lethinh.matterexpansion.network.GenericPacketClientToServer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;

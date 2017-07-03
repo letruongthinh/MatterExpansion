@@ -16,11 +16,16 @@
 
 package io.lethinh.matterexpansion.init;
 
+import org.apache.commons.lang3.Validate;
+
+import io.lethinh.matterexpansion.backend.helpers.IItemModelRegister;
 import io.lethinh.matterexpansion.block.BlockFreezer;
 import io.lethinh.matterexpansion.block.BlockMetal;
 import io.lethinh.matterexpansion.block.BlockSolderingStation;
 import io.lethinh.matterexpansion.block.GenericItemBlock;
+import io.lethinh.matterexpansion.block.GenericTileBlock;
 import io.lethinh.matterexpansion.block.ItemBlockMetal;
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -40,14 +45,9 @@ public class ModBlocks {
 	public static ItemStack blockDarkfire;
 
 	public static void preInit() {
-		blockFreezer = new BlockFreezer();
-		GameRegistry.register(new GenericItemBlock(blockFreezer));
-
-		blockMetal = new BlockMetal();
-		GameRegistry.register(new ItemBlockMetal(blockMetal));
-
-		blockSolderingStation = new BlockSolderingStation();
-		GameRegistry.register(new GenericItemBlock(blockSolderingStation));
+		blockFreezer = registerBlock(new BlockFreezer());
+		blockSolderingStation = registerBlock(new BlockSolderingStation());
+		blockMetal = registerBlock(new BlockMetal(), new ItemBlockMetal(blockMetal));
 
 		initMetaItemStacks();
 	}
@@ -57,6 +57,31 @@ public class ModBlocks {
 		blockNeon = new ItemStack(blockMetal, 1, BlockMetal.MetalType.NEON.getMeta());
 		blockMega = new ItemStack(blockMetal, 1, BlockMetal.MetalType.MEGA.getMeta());
 		blockDarkfire = new ItemStack(blockMetal, 1, BlockMetal.MetalType.DARKFIRE.getMeta());
+	}
+
+	/* REGISTRY */
+	private static <T extends Block> T registerBlock(T block) {
+		return registerBlock(block, new GenericItemBlock(block));
+	}
+
+	private static <T extends Block> T registerBlock(T block, GenericItemBlock itemBlock) {
+		Validate.notNull(block);
+		Validate.notNull(itemBlock);
+
+		GameRegistry.register(block);
+		GameRegistry.register(itemBlock);
+
+		if (block instanceof IItemModelRegister) {
+			((IItemModelRegister) block).registerItemModel();
+		}
+
+		if (block instanceof GenericTileBlock<?>) {
+			final GenericTileBlock<?> tileBlock = (GenericTileBlock<?>) block;
+			GameRegistry.registerTileEntity(tileBlock.getTileClass(),
+					tileBlock.getUnlocalizedName().replace('.', '_').replaceAll("tile.", ""));
+		}
+
+		return block;
 	}
 
 }

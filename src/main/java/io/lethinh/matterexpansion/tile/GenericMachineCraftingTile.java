@@ -43,7 +43,6 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 		implements ISidedInventory, ITickable {
 
 	protected NonNullList<ItemStack> stacks;
-	protected EnumFacing side;
 	protected long ticks;
 	protected boolean isActive, needsNetworkUpdate;
 	public int progress;
@@ -52,7 +51,6 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 	public GenericMachineCraftingTile(int size, String name, int width, int height) {
 		super(name);
 		this.stacks = NonNullList.withSize(size, ItemStack.EMPTY);
-		this.side = EnumFacing.NORTH;
 		this.ticks = 0;
 		this.isActive = false;
 		this.progress = 0;
@@ -61,6 +59,8 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
+		super.readFromNBT(compound);
+
 		this.stacks = NonNullList.withSize(this.getSizeInventory() - this.craftMatrix.getSizeInventory(),
 				ItemStack.EMPTY);
 
@@ -77,9 +77,6 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 				this.craftMatrix.setInventorySlotContents(index - this.stacks.size(), new ItemStack(itemTags));
 			}
 		});
-
-		this.side = EnumFacing.values()[compound.getByte("Side")];
-		super.readFromNBT(compound);
 	}
 
 	@Override
@@ -102,7 +99,6 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 			compound.setTag("Items", tagList);
 		}
 
-		compound.setByte("Side", (byte) this.side.ordinal());
 		return super.writeToNBT(compound);
 	}
 
@@ -282,7 +278,6 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 		super.loadBlobsTickets(packet);
 		this.craftMatrix.loadBlobsTickets(packet);
 		this.stacks = packet.readItemStacks();
-		this.side = packet.readSide();
 	}
 
 	@Override
@@ -290,7 +285,6 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 		super.saveBlobsTickets(packet);
 		this.craftMatrix.saveBlobsTickets(packet);
 		packet.writeItemStacks(this.stacks);
-		packet.writeSide(this.side);
 	}
 
 }

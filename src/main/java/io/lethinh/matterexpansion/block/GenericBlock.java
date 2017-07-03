@@ -42,7 +42,6 @@ public abstract class GenericBlock extends Block implements IItemModelRegister, 
 		this.setRegistryName(MatterExpansion.ModID, name);
 		this.setUnlocalizedName(this.getRegistryName().getResourcePath());
 		this.setCreativeTab(MatterExpansion.tab);
-		this.registerItemModel();
 	}
 
 	@Override
