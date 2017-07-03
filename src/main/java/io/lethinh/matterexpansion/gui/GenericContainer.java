@@ -75,15 +75,6 @@ public abstract class GenericContainer<TE extends GenericTile> extends Container
 		return itemStack;
 	}
 
-	@Override
-	protected Slot addSlotToContainer(Slot slot) {
-		if (this.playerInventoryStart >= 0)
-			throw new RuntimeException(
-					"Player inventory has to be last slot! Add all slots before adding the player inventory!");
-
-		return super.addSlotToContainer(slot);
-	}
-
 	/* INVENTORY */
 	/**
 	 * Draws the inventory of the player.
