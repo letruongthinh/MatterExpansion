@@ -62,7 +62,8 @@ public class ModCrafting {
 				FluidRegistry.getFluidStack(Blocks.LAVA.getUnlocalizedName(), Fluid.BUCKET_VOLUME),
 				Fluid.BUCKET_VOLUME);
 
-		addSolderRecipe(FluidRegistry.getFluidStack(FluidRegistry.getFluidStack(Blocks.LAVA.getUnlocalizedName(), Fluid.BUCKET_VOLUME), ModItems.itemIngotDarkfire,
+		addSolderRecipe(FluidRegistry.getFluidStack(Blocks.LAVA.getUnlocalizedName(), Fluid.BUCKET_VOLUME / 2),
+				ModItems.itemIngotDarkfire,
 				"ABA",
 				"BCB",
 				"ABA",
