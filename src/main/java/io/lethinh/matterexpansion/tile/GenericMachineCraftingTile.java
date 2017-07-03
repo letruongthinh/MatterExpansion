@@ -265,12 +265,10 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile implem
 
 	/* CONTAINER */
 	@SideOnly(Side.CLIENT)
-	@Override
 	public void getGuiNetworkData(int data, int value) {
 		this.progress = value;
 	}
 
-	@Override
 	public void sendGuiNetworkData(GenericContainer container, IContainerListener listener) {
 		listener.sendProgressBarUpdate(container, 0, this.progress);
 	}
