@@ -249,7 +249,6 @@ public class TileSolderingStation extends GenericMachineCraftingTile implements 
 	@Override
 	public void sendGuiNetworkData(GenericContainer container, IContainerListener listener) {
 		listener.sendProgressBarUpdate(container, 0, this.progress);
-		PacketHandler.sendToPlayer(new PacketTileUpdate(this.pos), (EntityPlayerMP) listener);
 	}
 
 }

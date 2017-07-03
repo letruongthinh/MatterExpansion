@@ -146,7 +146,6 @@ public class TileFreezer extends GenericMachineTile implements IGuiTile {
 	@Override
 	public void sendGuiNetworkData(GenericContainer container, IContainerListener listener) {
 		listener.sendProgressBarUpdate(container, 0, this.progress);
-		PacketHandler.sendToPlayer(new PacketTileUpdate(this.pos), (EntityPlayerMP) listener);
 	}
 
 }
