@@ -50,8 +50,9 @@ public class BlockMetal extends GenericBlock {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void getSubBlocks(Item item, CreativeTabs tab, NonNullList<ItemStack> subItems) {
-		subItems.addAll(Stream.of(MetalType.values()).map(type -> new ItemStack(item, 1, type.getMeta()))
-				.collect(Collectors.toList()));
+		for (int i = 0; i < MetalType.values().length; ++i) {
+			subItems.add(new ItemStack(item, 1, i));
+		}
 	}
 
 	@Override
@@ -93,10 +94,16 @@ public class BlockMetal extends GenericBlock {
 		MEGA(1, "mega"),
 		DARKFIRE(2, "darkfire");
 
-		private static final MetalType[] META_LOOKUP = Stream.of(values()).toArray(MetalType[]::new);
+		private static final MetalType[] META_LOOKUP = new MetalType[values().length];
 
 		private final int meta;
 		private final String name;
+
+		static {
+			for (final MetalType metalType : values()) {
+				META_LOOKUP[metalType.getMeta()] = metalType;
+			}
+		}
 
 		MetalType(int meta, String name) {
 			this.meta = meta;
@@ -119,7 +126,6 @@ public class BlockMetal extends GenericBlock {
 
 			return META_LOOKUP[meta];
 		}
-
 	}
 
 }
