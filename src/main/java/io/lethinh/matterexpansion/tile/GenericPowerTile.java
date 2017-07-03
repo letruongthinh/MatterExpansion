@@ -27,11 +27,7 @@ import net.minecraft.util.EnumFacing;
  */
 public abstract class GenericPowerTile extends GenericTile implements IEnergyReceiver {
 
-	public final EnergyStorage energy = new EnergyStorage(this.getCapacity(), this.getCapacity(), 0);
-
-	public GenericPowerTile(String name) {
-		super(name);
-	}
+	public final EnergyStorage energy = new EnergyStorage(this.getEnergyCapacity(), this.getEnergyCapacity(), 0);
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
@@ -70,7 +66,7 @@ public abstract class GenericPowerTile extends GenericTile implements IEnergyRec
 		return this.energy.getEnergyStored();
 	}
 
-	public abstract int getCapacity();
+	public abstract int getEnergyCapacity();
 
 	public void setEnergyStored(int energy) {
 		this.energy.setEnergyStored(energy);
@@ -82,7 +78,7 @@ public abstract class GenericPowerTile extends GenericTile implements IEnergyRec
 
 	/* CONTAINER */
 	public int getScaledEnergy(int pixels) {
-		return (int) Math.floor(this.getEnergyStored() * pixels / this.getCapacity());
+		return (int) Math.floor(this.getEnergyStored() * pixels / this.getEnergyCapacity());
 	}
 
 }

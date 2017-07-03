@@ -29,6 +29,7 @@ import io.lethinh.matterexpansion.backend.utils.InventoryUtils;
 import io.lethinh.matterexpansion.backend.utils.ItemNBTUtils;
 import io.lethinh.matterexpansion.backend.utils.StringUtils;
 import io.lethinh.matterexpansion.backend.utils.ToolUtils;
+import io.lethinh.matterexpansion.init.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -38,7 +39,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Enchantments;
 import net.minecraft.item.EnumRarity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -49,7 +49,6 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -61,13 +60,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class ItemDarkfirePickaxe extends ItemPickaxe implements IItemModelRegister, IBakeryProvider {
 
-	public static Item.ToolMaterial DARKFIRE_PICKAXE = EnumHelper.addToolMaterial("itemDarkfirePickaxe", 64, -1, 100.0f,
-			12, 1000); // Unbreakble. Yay
-
 	private final String NBT_MODE = MatterExpansion.ModID + "_mode";
 
 	public ItemDarkfirePickaxe() {
-		super(DARKFIRE_PICKAXE);
+		super(ModItems.DARKFIRE);
 		this.setRegistryName(MatterExpansion.ModID, "itemDarkfirePickaxe");
 		this.setUnlocalizedName(this.getRegistryName().toString());
 		this.setCreativeTab(MatterExpansion.tab);
@@ -86,19 +82,18 @@ public class ItemDarkfirePickaxe extends ItemPickaxe implements IItemModelRegist
 
 			this.toggleMode(heldItem);
 			TooltipHandler
-					.setTooltip(I18n.format(StringUtils.prefixTooltip("itemDarkfirePickaxe", this.getMode(heldItem))));
+					.setTooltip(I18n.format(StringUtils.prefixTooltip("darkfire_pickaxe", this.getMode())));
 		}
 
 		return super.onItemRightClick(world, player, hand);
 	}
 
 	@Override
-	public boolean onBlockStartBreak(ItemStack stack, BlockPos pos,
-			EntityPlayer player) {
+	public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, EntityPlayer player) {
 		final RayTraceResult raycast = ToolUtils.raytraceFromEntity(player.world, player, true, 10);
 
 		if (!player.world.isRemote && raycast != null) {
-			this.breakOtherBlock(player, stack, pos, pos, raycast.sideHit);
+			this.breakOtherBlock(player, pos, pos, raycast.sideHit);
 		}
 
 		return false;
@@ -108,10 +103,11 @@ public class ItemDarkfirePickaxe extends ItemPickaxe implements IItemModelRegist
 	 * Copied from Botania by Vazkii. Have edited and modifed. Under the Botania
 	 * license: http://botaniamod.net/license.php
 	 */
-	private void breakOtherBlock(EntityPlayer player, ItemStack stack, BlockPos pos, BlockPos originPos,
-			EnumFacing side) {
+	private void breakOtherBlock(EntityPlayer player, BlockPos pos, BlockPos originPos, EnumFacing side) {
 		final World world = player.world;
 		final Material mat = world.getBlockState(pos).getMaterial();
+		final ItemStack heldItem = new ItemStack(this);
+
 		if (!ToolUtils.materialsPick.contains(mat))
 			return;
 
@@ -122,7 +118,7 @@ public class ItemDarkfirePickaxe extends ItemPickaxe implements IItemModelRegist
 		final boolean doY = side.getFrontOffsetY() == 0;
 		final boolean doZ = side.getFrontOffsetZ() == 0;
 
-		switch (this.getMode(stack)) {
+		switch (this.getMode()) {
 		case 0:
 			break;
 		case 1:
@@ -135,7 +131,7 @@ public class ItemDarkfirePickaxe extends ItemPickaxe implements IItemModelRegist
 			BlockPos beginDiff = new BlockPos(doX ? -range : 0, doY ? -1 : 0, doZ ? -range : 0);
 			BlockPos endDiff = new BlockPos(doX ? range : 0, doY ? rangeY * 2 - 1 : 0, doZ ? range : 0);
 
-			ToolUtils.removeBlocksInIteration(player, stack, world, pos, beginDiff, endDiff, null,
+			ToolUtils.removeBlocksInIteration(player, heldItem, world, pos, beginDiff, endDiff, null,
 					ToolUtils.materialsPick, silk, fortune);
 			break;
 		case 2:
@@ -148,7 +144,7 @@ public class ItemDarkfirePickaxe extends ItemPickaxe implements IItemModelRegist
 			beginDiff = new BlockPos(doX ? -range : 0, doY ? -1 : 0, doZ ? -range : 0);
 			endDiff = new BlockPos(doX ? range : 0, doY ? rangeY * 2 - 1 : 0, doZ ? range : 0);
 
-			ToolUtils.removeBlocksInIteration(player, stack, world, pos, beginDiff, endDiff, null,
+			ToolUtils.removeBlocksInIteration(player, heldItem, world, pos, beginDiff, endDiff, null,
 					ToolUtils.materialsPick, silk, fortune);
 			break;
 		case 3:
@@ -161,7 +157,7 @@ public class ItemDarkfirePickaxe extends ItemPickaxe implements IItemModelRegist
 			beginDiff = new BlockPos(doX ? -range : 0, doY ? -1 : 0, doZ ? -range : 0);
 			endDiff = new BlockPos(doX ? range : 0, doY ? rangeY * 2 - 1 : 0, doZ ? range : 0);
 
-			ToolUtils.removeBlocksInIteration(player, stack, world, pos, beginDiff, endDiff, null,
+			ToolUtils.removeBlocksInIteration(player, heldItem, world, pos, beginDiff, endDiff, null,
 					ToolUtils.materialsPick, silk, fortune);
 			break;
 		case 4:
@@ -174,7 +170,7 @@ public class ItemDarkfirePickaxe extends ItemPickaxe implements IItemModelRegist
 			beginDiff = new BlockPos(doX ? -range : 0, doY ? -1 : 0, doZ ? -range : 0);
 			endDiff = new BlockPos(doX ? range : 0, doY ? rangeY * 2 - 1 : 0, doZ ? range : 0);
 
-			ToolUtils.removeBlocksInIteration(player, stack, world, pos, beginDiff, endDiff, null,
+			ToolUtils.removeBlocksInIteration(player, heldItem, world, pos, beginDiff, endDiff, null,
 					ToolUtils.materialsPick, silk, fortune);
 			break;
 		case 5:
@@ -187,7 +183,7 @@ public class ItemDarkfirePickaxe extends ItemPickaxe implements IItemModelRegist
 			beginDiff = new BlockPos(doX ? -range : 0, doY ? -1 : 0, doZ ? -range : 0);
 			endDiff = new BlockPos(doX ? range : 0, doY ? rangeY * 2 - 1 : 0, doZ ? range : 0);
 
-			ToolUtils.removeBlocksInIteration(player, stack, world, pos, beginDiff, endDiff, null,
+			ToolUtils.removeBlocksInIteration(player, heldItem, world, pos, beginDiff, endDiff, null,
 					ToolUtils.materialsPick, silk, fortune);
 			break;
 		case 6:
@@ -203,7 +199,7 @@ public class ItemDarkfirePickaxe extends ItemPickaxe implements IItemModelRegist
 			beginDiff = new BlockPos(xo >= 0 ? 0 : -range, yo >= 0 ? 0 : -range, zo >= 0 ? 0 : -range);
 			endDiff = new BlockPos(xo > 0 ? range : 1, yo > 0 ? range : 1, zo > 0 ? range : 1);
 
-			ToolUtils.removeBlocksInIteration(player, stack, world, pos, beginDiff, endDiff, null,
+			ToolUtils.removeBlocksInIteration(player, heldItem, world, pos, beginDiff, endDiff, null,
 					ToolUtils.materialsPick, silk, fortune);
 			break;
 		}
@@ -235,18 +231,15 @@ public class ItemDarkfirePickaxe extends ItemPickaxe implements IItemModelRegist
 	 *
 	 * @return The current mode of the stack
 	 */
-	private int getMode(ItemStack stack) {
-		return ItemNBTUtils.getInteger(stack, this.NBT_MODE);
+	private int getMode() {
+		return ItemNBTUtils.getInteger(new ItemStack(this), this.NBT_MODE);
 	}
 
 	/**
-	 * @param stack
-	 *            The stack that uses to get the range of the pickaxe
-	 *
-	 * @return The current range of the pickaxe
+	 * @return The range of the pickaxe can mine.
 	 */
-	private int getModeRange(ItemStack stack) {
-		switch (this.getMode(stack)) {
+	private int getModeRange() {
+		switch (this.getMode()) {
 		case 0:
 			return 1;
 		case 1:
@@ -266,12 +259,20 @@ public class ItemDarkfirePickaxe extends ItemPickaxe implements IItemModelRegist
 		}
 	}
 
+	@Override
+	public float getStrVsBlock(ItemStack stack, IBlockState state) {
+		for (final Material material : ToolUtils.materialsPick)
+			return this.efficiencyOnProperMaterial;
+
+		return super.getStrVsBlock(stack, state);
+	}
+
 	/**
 	 * @param stack
 	 *            The stack that can toggle the mode
 	 */
 	private void toggleMode(ItemStack stack) {
-		ItemNBTUtils.setInteger(stack, this.NBT_MODE, this.getMode(stack) < 6 ? this.getMode(stack) + 1 : 0);
+		ItemNBTUtils.setInteger(stack, this.NBT_MODE, this.getMode() < 6 ? this.getMode() + 1 : 0);
 	}
 
 	/* EVENT */
@@ -284,7 +285,8 @@ public class ItemDarkfirePickaxe extends ItemPickaxe implements IItemModelRegist
 		final Block block = state.getBlock();
 		final ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
 
-		if (world.isRemote || event.getFace() == null || heldItem.isEmpty() || player.capabilities.isCreativeMode)
+		if (world.isRemote || event.getFace() == null || player.getActiveHand() == EnumHand.OFF_HAND
+				|| heldItem.isEmpty() || player.capabilities.isCreativeMode)
 			return;
 
 		// Why is not integer zero? Because Java count the value that compares
@@ -303,8 +305,7 @@ public class ItemDarkfirePickaxe extends ItemPickaxe implements IItemModelRegist
 											// the default block and the current
 											// meta block.
 			InventoryUtils.dropItemStack(world, pos, block.getPickBlock(state,
-					ToolUtils.raytraceFromEntity(world, player, true, this.getModeRange(heldItem)), world, pos,
-					player));
+					ToolUtils.raytraceFromEntity(world, player, true, this.getModeRange()), world, pos, player));
 		}
 	}
 

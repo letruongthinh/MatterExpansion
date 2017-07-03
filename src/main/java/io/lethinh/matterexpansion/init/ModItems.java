@@ -24,6 +24,7 @@ import io.lethinh.matterexpansion.item.tool.ItemDarkfirePickaxe;
 import io.lethinh.matterexpansion.item.tool.ItemDarkfireSword;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
@@ -31,6 +32,9 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  * @author Le Thinh
  */
 public class ModItems {
+
+	public static final Item.ToolMaterial DARKFIRE = EnumHelper.addToolMaterial("itemDarkfirePickaxe", 64, -1, 64.0f,
+			12, 1000);
 
 	public static ItemAnimalConverter itemAnimalConverter;
 	public static ItemFireWand itemFireWand;

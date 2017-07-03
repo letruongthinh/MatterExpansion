@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import io.lethinh.matterexpansion.backend.utils.StringUtils;
 import io.lethinh.matterexpansion.gui.GenericGui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fml.relauncher.Side;
@@ -47,8 +48,9 @@ public class WidgetFilledTank extends GenericWidget {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void renderBackground(GenericGui gui, int mouseX, int mouseY) {
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		gui.mc.getTextureManager().bindTexture(texFluidEmpty);
-		gui.drawTexturedModalRect(this.getX(), this.getY(), 0, 0, this.getWidth(), this.getHeight());
+		gui.drawTexturedModalRect(this.x, this.y, 0, 0, this.width, this.height);
 
 		gui.mc.getTextureManager().bindTexture(texFluidFull);
 		final int pixels = 24;
@@ -58,13 +60,13 @@ public class WidgetFilledTank extends GenericWidget {
 			scale = pixels * this.tank.getFluidAmount() / this.tank.getCapacity();
 		}
 
-		gui.drawTexturedModalRect(this.getX(), this.getY(), 0, 0, this.getWidth(), scale);
+		gui.drawTexturedModalRect(this.x, this.y, 0, 0, this.width, scale);
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void addInformation(ArrayList<String> tooltip) {
-		if (tooltip != null) {
+		if (!tooltip.isEmpty()) {
 			tooltip.add(StringUtils.prefixNumber(this.tank.getFluidAmount(), this.tank.getCapacity()));
 		}
 	}

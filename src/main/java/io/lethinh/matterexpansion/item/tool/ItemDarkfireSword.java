@@ -27,19 +27,19 @@ import io.lethinh.matterexpansion.MatterExpansion;
 import io.lethinh.matterexpansion.backend.helpers.IItemModelRegister;
 import io.lethinh.matterexpansion.backend.model.ModelToolItem;
 import io.lethinh.matterexpansion.backend.utils.AttributeUtils;
+import io.lethinh.matterexpansion.init.ModItems;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumRarity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -49,11 +49,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class ItemDarkfireSword extends ItemSword implements IItemModelRegister, IBakeryProvider {
 
-	public static Item.ToolMaterial DARKFIRE_SWORD = EnumHelper.addToolMaterial("itemDarkfireSword", 64, -1, 100.0f,
-			1000.0F, 1000); // Unbreakble. Yay
-
 	public ItemDarkfireSword() {
-		super(DARKFIRE_SWORD);
+		super(ModItems.DARKFIRE);
 		this.setRegistryName(MatterExpansion.ModID, "darkfire_sword");
 		this.setUnlocalizedName(this.getRegistryName().toString());
 		this.setCreativeTab(MatterExpansion.tab);
@@ -66,34 +63,39 @@ public class ItemDarkfireSword extends ItemSword implements IItemModelRegister, 
 
 	@Override
 	public boolean hitEntity(ItemStack heldItem, EntityLivingBase target, EntityLivingBase player) {
-		if (player.world.isRemote)
-			return true;
+		if (target.world.isRemote)
+			return false;
 
 		final EntityPlayer realPlayer = (EntityPlayer) player;
 
 		if (!realPlayer.capabilities.isCreativeMode && target instanceof EntityPlayer
 				&& heldItem.isItemEqual(new ItemStack(this))) {
-			// Attack the entity
-			target.attackEntityFrom(
+			// Attack the entity. Bypasses the armor and causes many damages
+			// type.
+			realPlayer.attackEntityFrom(
 					new EntityDamageSource("darkfire_sword", realPlayer).setDamageBypassesArmor().setFireDamage()
 							.setMagicDamage()
 							.setProjectile(),
-					1000.0F);
+					12.0F);
+			realPlayer.attackTargetEntityWithCurrentItem(target);
 			target.addVelocity(5.0D, 5.0D, 5.0D); // Adding knockback
-			realPlayer.attackTargetEntityWithCurrentItem(target); // What does
-																	// this do?
-																	// May be
-																	// does some
-																	// special
-																	// attacks?
-			target.heal(-2.0F);
-			realPlayer.heal(4.0F); // YEAH. Soul stealer
+			target.heal(-2.0F); // Steals the soul.
+			realPlayer.heal(4.0F); // YEAH. Soul stealer.
 		}
 
-		target.setDead();
-		target.onDeath(new EntityDamageSource("darkfire_sword", realPlayer));
-		target.heal(-2.0F);
-		realPlayer.heal(2.0F); // YEAH. Soul stealer. Again
+		if (!(target instanceof EntityAnimal)) {
+			target.setDead(); // Other entities (except animals) one hit can
+								// kill them.
+			target.onDeath(new EntityDamageSource("darkfire_sword", realPlayer));
+			target.heal(-2.0F);
+			realPlayer.heal(2.0F); // YEAH. Soul stealer.
+		} else {
+			// The damage for animals is less than mobs.
+			target.setHealth(-6.0F);
+			// The soul added is less than the mobs too.
+			realPlayer.heal(1.0F);
+		}
+
 		return true;
 	}
 

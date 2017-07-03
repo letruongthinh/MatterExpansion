@@ -17,9 +17,10 @@
 package io.lethinh.matterexpansion.crafting;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 import javax.annotation.Nonnull;
+
+import org.apache.commons.lang3.Validate;
 
 import io.lethinh.matterexpansion.tile.inventory.PerpetualInventoryCrafting;
 import net.minecraft.block.Block;
@@ -48,54 +49,61 @@ public class SolderShapedRecipe extends ShapedOreRecipe {
 
 	/* RECIPE */
 	public boolean matches(PerpetualInventoryCrafting craftMatrix) {
-		return IntStream.range(0, this.getWidth())
-				.anyMatch(row -> IntStream.range(0, this.getHeight()).anyMatch(column -> {
-					if (this.checkMatch(craftMatrix, row, column, false))
-						return true;
+		Validate.notNull(craftMatrix);
 
-					if (this.mirrored && this.checkMatch(craftMatrix, row, column, true))
-						return true;
+		for (int row = 0; row < this.getWidth(); ++row) {
+			for (int column = 0; column < this.getWidth(); ++column) {
+				if (this.checkMatch(craftMatrix, row, column, false))
+					return true;
 
-					return false;
-				}));
+				if (this.mirrored && this.checkMatch(craftMatrix, row, column, true))
+					return true;
+
+			}
+		}
+
+		return false;
 	}
 
 	protected boolean checkMatch(PerpetualInventoryCrafting craftMatrix, int x, int y, boolean mirror) {
-		return IntStream.range(0, this.getWidth())
-				.anyMatch(row -> IntStream.range(0, this.getHeight()).anyMatch(column -> {
-					final int xCorner = row - x;
-					final int yCorner = column - y;
-					Object target = null;
+		Validate.notNull(craftMatrix);
 
-					if (xCorner >= 0 && yCorner >= 0 && xCorner < this.getWidth() && yCorner < this.getHeight()) {
-						if (mirror) {
-							target = this.input[this.getWidth() - xCorner - 1 + yCorner * this.getWidth()];
-						} else {
-							target = this.input[xCorner + yCorner * this.getWidth()];
+		for (int row = 0; row < this.getWidth(); ++row) {
+			for (int column = 0; column < this.getWidth(); ++column) {
+				final int xCorner = row - x;
+				final int yCorner = column - y;
+				Object target = null;
+
+				if (xCorner >= 0 && yCorner >= 0 && xCorner < this.getWidth() && yCorner < this.getHeight()) {
+					if (mirror) {
+						target = this.input[this.getWidth() - xCorner - 1 + yCorner * this.getWidth()];
+					} else {
+						target = this.input[xCorner + yCorner * this.getWidth()];
+					}
+				}
+
+				final ItemStack slot = craftMatrix.getStackInRowAndColumn(row, column);
+
+				if (target instanceof ItemStack) {
+					if (!OreDictionary.itemMatches((ItemStack) target, slot, false))
+						return false;
+				} else if (target instanceof List) {
+					boolean matched = false;
+
+					for (final Object recipe : this.input) {
+						if (!matched) {
+							matched = OreDictionary.itemMatches((ItemStack) recipe, slot, false);
 						}
 					}
 
-					final ItemStack slot = craftMatrix.getStackInRowAndColumn(row, column);
-
-					if (target instanceof ItemStack) {
-						if (!OreDictionary.itemMatches((ItemStack) target, slot, false))
-							return false;
-					} else if (target instanceof List) {
-						boolean matched = false;
-
-						for (final Object recipe : this.input) {
-							if (!matched) {
-								matched = OreDictionary.itemMatches((ItemStack) recipe, slot, false);
-							}
-						}
-
-						if (!matched)
-							return false;
-					} else if (!slot.isEmpty())
+					if (!matched)
 						return false;
+				} else if (!slot.isEmpty())
+					return false;
+			}
+		}
 
-					return true;
-				}));
+		return true;
 	}
 
 }

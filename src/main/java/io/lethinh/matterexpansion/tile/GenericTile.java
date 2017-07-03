@@ -18,9 +18,7 @@ package io.lethinh.matterexpansion.tile;
 
 import javax.annotation.Nullable;
 
-import io.lethinh.matterexpansion.gui.GenericContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.inventory.IContainerListener;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -28,27 +26,18 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  *
  * @author Le Thinh
  */
 public abstract class GenericTile extends TileEntity {
-
-	protected final String name;
-
-	public GenericTile(String name) {
-		this.name = name;
-	}
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
@@ -83,7 +72,7 @@ public abstract class GenericTile extends TileEntity {
 	@Nullable
 	@Override
 	public ITextComponent getDisplayName() {
-		return new TextComponentString(this.name);
+		return null;
 	}
 
 	@Override
@@ -118,11 +107,5 @@ public abstract class GenericTile extends TileEntity {
 	public IEnergyStorage getEnergyHandler(EnumFacing facing) {
 		return null;
 	}
-
-	/* CONTAINER */
-	@SideOnly(Side.CLIENT)
-	public abstract void getGuiNetworkData(int data, int value);
-
-	public abstract void sendGuiNetworkData(GenericContainer container, IContainerListener listener);
 
 }

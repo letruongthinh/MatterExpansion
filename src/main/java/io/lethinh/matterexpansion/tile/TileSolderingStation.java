@@ -28,11 +28,9 @@ import io.lethinh.matterexpansion.backend.utils.InventoryUtils;
 import io.lethinh.matterexpansion.crafting.SolderMeltingRecipe;
 import io.lethinh.matterexpansion.crafting.SolderRecipe;
 import io.lethinh.matterexpansion.gui.ContainerSolderingStation;
-import io.lethinh.matterexpansion.gui.GenericContainer;
 import io.lethinh.matterexpansion.gui.GuiSolderingStation;
 import io.lethinh.matterexpansion.init.ModCrafting;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IContainerListener;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -40,8 +38,6 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  *
@@ -58,7 +54,7 @@ public class TileSolderingStation extends GenericMachineCraftingTile implements 
 	public final int maxTime = 300;
 
 	public TileSolderingStation() {
-		super(2, "soldering_station", 3, 3);
+		super(2, 3, 3);
 	}
 
 	@Override
@@ -120,10 +116,9 @@ public class TileSolderingStation extends GenericMachineCraftingTile implements 
 		// process.
 		if (this.progress >= this.maxTime && this.getEnergyStored() >= 4000
 				&& this.tank.getFluidAmount() >= this.fluidRequired && recipe.recipe.matches(this.craftMatrix)) {
-			IntStream.range(0, this.craftMatrix.getSizeInventory()).forEach(i -> {
+			for (int i = 0; i < this.craftMatrix.getSizeInventory(); ++i) {
 				// The input fluid of the recipe.
 				final FluidStack toDrain = recipe.fluid;
-
 				// The fluid currently contains in the tank.
 				final FluidStack drained = this.tank.drainInternal(toDrain, false);
 
@@ -150,7 +145,7 @@ public class TileSolderingStation extends GenericMachineCraftingTile implements 
 				} else {
 					this.progress = 0;
 				}
-			});
+			}
 		}
 
 		if (!this.getStackInSlot(this.SLOT_MELT).isEmpty()
@@ -166,7 +161,6 @@ public class TileSolderingStation extends GenericMachineCraftingTile implements 
 				this.meltingPoint = 0;
 			}
 
-			this.markDirty();
 			this.extractEnergy(500);
 		}
 	}
@@ -184,7 +178,7 @@ public class TileSolderingStation extends GenericMachineCraftingTile implements 
 
 	/* ENERGY */
 	@Override
-	public int getCapacity() {
+	public int getEnergyCapacity() {
 		return 500000;
 	}
 
@@ -226,18 +220,6 @@ public class TileSolderingStation extends GenericMachineCraftingTile implements 
 	@Override
 	public Object getClientGuiElement(EntityPlayer player, int ID, int x, int y, int z) {
 		return new GuiSolderingStation(this, player.inventory);
-	}
-
-	/* CONTAINER */
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void getGuiNetworkData(int data, int value) {
-		this.progress = value;
-	}
-
-	@Override
-	public void sendGuiNetworkData(GenericContainer container, IContainerListener listener) {
-		listener.sendProgressBarUpdate(container, 0, this.progress);
 	}
 
 }

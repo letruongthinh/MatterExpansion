@@ -52,11 +52,11 @@ public abstract class GenericContainer<TE extends GenericTile> extends Container
 		// Cannot transfer stack because there is no slot in the inventory
 		if (this.playerInventoryStart <= -1)
 			return ItemStack.EMPTY;
-		
+
 		final Slot slot = this.inventorySlots.get(index);
 		ItemStack itemStack = ItemStack.EMPTY;
 
-		if (slot != null && slot.getHasStack() && this.playerInventoryStart > 0) {
+		if (slot != null && slot.getHasStack()) {
 			final ItemStack itemStack1 = ItemStack.EMPTY;
 			itemStack = InventoryUtils.copyItemStack(itemStack1);
 			assert !itemStack1.isEmpty();

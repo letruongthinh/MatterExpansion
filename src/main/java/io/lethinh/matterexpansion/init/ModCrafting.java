@@ -22,6 +22,7 @@ import javax.annotation.Nonnull;
 
 import io.lethinh.matterexpansion.backend.utils.RecipeUtils;
 import io.lethinh.matterexpansion.crafting.FreezerRecipe;
+import io.lethinh.matterexpansion.crafting.NeonItemMakerRecipe;
 import io.lethinh.matterexpansion.crafting.SolderMeltingRecipe;
 import io.lethinh.matterexpansion.crafting.SolderRecipe;
 import io.lethinh.matterexpansion.tile.inventory.PerpetualInventoryCrafting;
@@ -39,7 +40,10 @@ import net.minecraftforge.oredict.OreDictionary;
  */
 public class ModCrafting {
 
+	// The elements cannot be duplicate. HashSet is more preferable than
+	// ArrayList in this case.
 	public static final HashSet<FreezerRecipe> FREEZER_RECIPES = new HashSet<>();
+	public static final HashSet<NeonItemMakerRecipe> NEON_ITEM_MAKER_RECIPES = new HashSet<>();
 	public static final HashSet<SolderRecipe> SOLDER_RECIPES = new HashSet<>();
 	public static final HashSet<SolderMeltingRecipe> SOLDER_MELTING_RECIPES = new HashSet<>();
 
@@ -70,6 +74,11 @@ public class ModCrafting {
 	/* FREEZER */
 	public static void addFreezerRecipe(ItemStack input, ItemStack output) {
 		FREEZER_RECIPES.add(new FreezerRecipe(input, output));
+	}
+
+	/* NEON ITEM MAKER */
+	public static void addNeonItemMakerRecipe(ItemStack input_1, ItemStack input_2, ItemStack output) {
+		NEON_ITEM_MAKER_RECIPES.add(new NeonItemMakerRecipe(input_1, input_2, output));
 	}
 
 	/* SOLDER */

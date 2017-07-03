@@ -22,15 +22,11 @@ import io.lethinh.matterexpansion.backend.helpers.IGuiTile;
 import io.lethinh.matterexpansion.backend.utils.InventoryUtils;
 import io.lethinh.matterexpansion.crafting.FreezerRecipe;
 import io.lethinh.matterexpansion.gui.ContainerFreezer;
-import io.lethinh.matterexpansion.gui.GenericContainer;
 import io.lethinh.matterexpansion.gui.GuiFreezer;
 import io.lethinh.matterexpansion.init.ModCrafting;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IContainerListener;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  *
@@ -43,7 +39,7 @@ public class TileFreezer extends GenericMachineTile implements IGuiTile {
 	public final int SLOT_OUTPUT = 1;
 
 	public TileFreezer() {
-		super(2, "blockFreezer");
+		super(2);
 	}
 
 	@Override
@@ -77,7 +73,7 @@ public class TileFreezer extends GenericMachineTile implements IGuiTile {
 
 	/* ENERGY */
 	@Override
-	public int getCapacity() {
+	public int getEnergyCapacity() {
 		return 500000;
 	}
 
@@ -105,8 +101,8 @@ public class TileFreezer extends GenericMachineTile implements IGuiTile {
 
 	@Override
 	protected void doClientWork() {
-		final FreezerRecipe currentRecipe = this.getCurrentRecipe();
-		final ItemStack output = InventoryUtils.copyItemStack(currentRecipe.output);
+		final FreezerRecipe recipe = this.getCurrentRecipe();
+		final ItemStack output = InventoryUtils.copyItemStack(recipe.output);
 
 		if (this.getStackInSlot(this.SLOT_OUTPUT).isEmpty()) {
 			this.setInventorySlotContents(this.SLOT_OUTPUT, output);
@@ -114,7 +110,6 @@ public class TileFreezer extends GenericMachineTile implements IGuiTile {
 			output.grow(1);
 		}
 
-		this.markDirty();
 		this.extractEnergy(2000);
 		this.progress = 0;
 	}
@@ -132,26 +127,13 @@ public class TileFreezer extends GenericMachineTile implements IGuiTile {
 
 	/* RECIPE */
 	private FreezerRecipe getCurrentRecipe() {
-		final ItemStack input = this.getStackInSlot(this.SLOT_INPUT);
-
-		if (!input.isEmpty()) {
-			ModCrafting.FREEZER_RECIPES.stream().filter(recipe -> input.isItemEqual(recipe.input)).findFirst()
-					.orElse(null);
+		for (final FreezerRecipe recipe : ModCrafting.FREEZER_RECIPES) {
+			if (!this.getStackInSlot(this.SLOT_INPUT).isEmpty()
+					&& this.getStackInSlot(this.SLOT_INPUT).isItemEqual(recipe.input))
+				return recipe;
 		}
 
 		return null;
-	}
-
-	/* CONTAINER */
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void getGuiNetworkData(int data, int value) {
-		this.progress = value;
-	}
-
-	@Override
-	public void sendGuiNetworkData(GenericContainer container, IContainerListener listener) {
-		listener.sendProgressBarUpdate(container, 0, this.progress);
 	}
 
 }

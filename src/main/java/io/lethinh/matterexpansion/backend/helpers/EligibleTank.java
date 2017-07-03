@@ -16,11 +16,8 @@
 
 package io.lethinh.matterexpansion.backend.helpers;
 
-import java.io.IOException;
-
 import javax.annotation.Nullable;
 
-import io.lethinh.matterexpansion.network.EligiblePacketBuffer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.Fluid;
@@ -32,7 +29,7 @@ import net.minecraftforge.fluids.FluidTank;
  *
  * @author Le Thinh
  */
-public class EligibleTank extends FluidTank implements IBlobsWrapper {
+public class EligibleTank extends FluidTank {
 
 	public EligibleTank(TileEntity tile, int capacity) {
 		super(capacity);
@@ -70,17 +67,6 @@ public class EligibleTank extends FluidTank implements IBlobsWrapper {
 
 	public boolean isEmpty() {
 		return this.getFluid() == null || this.getFluidAmount() == 0;
-	}
-
-	/* PACKET */
-	@Override
-	public void loadBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		this.fluid = packet.readFluidStack();
-	}
-
-	@Override
-	public void saveBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		packet.writeFluidStack(this.fluid);
 	}
 
 }

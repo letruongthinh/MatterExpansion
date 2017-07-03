@@ -48,8 +48,9 @@ public class WidgetEnergy extends GenericWidget {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void renderBackground(GenericGui gui, int mouseX, int mouseY) {
+		super.renderBackground(gui, mouseX, mouseY);
 		gui.mc.getTextureManager().bindTexture(texEnergyEmpty);
-		gui.drawTexturedModalRect(this.getX(), this.getY(), 0, 0, this.getWidth(), this.getHeight());
+		gui.drawTexturedModalRect(this.x, this.y, 0, 0, this.width, this.height);
 
 		gui.mc.getTextureManager().bindTexture(texEnergyFull);
 		final int pixels = 24;
@@ -59,13 +60,13 @@ public class WidgetEnergy extends GenericWidget {
 			scale = pixels * this.energy.getEnergyStored() / this.energy.getMaxEnergyStored();
 		}
 
-		gui.drawTexturedModalRect(this.getX(), this.getY(), 0, 0, this.getWidth(), scale);
+		gui.drawTexturedModalRect(this.x, this.y, 0, 0, this.width, scale);
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void addInformation(ArrayList<String> tooltip) {
-		if (tooltip != null) {
+		if (!tooltip.isEmpty()) {
 			tooltip.add(StringUtils.prefixRFEnergy(this.energy.getEnergyStored(), this.energy.getMaxEnergyStored()));
 		}
 	}

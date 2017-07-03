@@ -20,6 +20,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import io.lethinh.matterexpansion.gui.GenericGui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -30,52 +31,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GenericWidget {
 
-	private final int x;
-	private final int y;
-	private final int width;
-	private final int height;
+	protected final int x;
+	protected final int y;
+	protected final int width;
+	protected final int height;
 
 	public GenericWidget(int x, int y, int width, int height) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-	}
-
-	/**
-	 * Gets the X position of the widget.
-	 *
-	 * @return the X position of the widget.
-	 */
-	public int getX() {
-		return this.x;
-	}
-
-	/**
-	 * Gets the Y position of the widget.
-	 *
-	 * @return the Y position of the widget.
-	 */
-	public int getY() {
-		return this.y;
-	}
-
-	/**
-	 * Gets the width of the widget.
-	 *
-	 * @return the width of the widget.
-	 */
-	public int getWidth() {
-		return this.width;
-	}
-
-	/**
-	 * Gets the height of the widget.
-	 *
-	 * @return the height of the widget.
-	 */
-	public int getHeight() {
-		return this.height;
 	}
 
 	/**
@@ -91,6 +56,7 @@ public class GenericWidget {
 	 */
 	@SideOnly(Side.CLIENT)
 	public void renderBackground(GenericGui gui, int mouseX, int mouseY) {
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	/**
@@ -107,6 +73,7 @@ public class GenericWidget {
 
 	@SideOnly(Side.CLIENT)
 	public void renderForeground(GenericGui gui, int mouseX, int mouseY) {
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	/**
@@ -135,7 +102,7 @@ public class GenericWidget {
 	 *         otherwise false.
 	 */
 	public boolean isMouseInWidget(int mouseX, int mouseY) {
-		return new Rectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight()).contains(mouseX, mouseY);
+		return new Rectangle(this.x, this.y, this.width, this.height).contains(mouseX, mouseY);
 	}
 
 }

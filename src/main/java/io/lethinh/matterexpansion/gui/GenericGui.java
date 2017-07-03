@@ -52,7 +52,9 @@ public abstract class GenericGui extends GuiContainer {
 		this.drawTexturedModalRect(width, height, 0, 0, this.xSize, this.ySize);
 
 		// WIDGET
-		this.widgets.forEach(widget -> widget.renderBackground(this, mouseX, mouseY));
+		for (final GenericWidget widget : this.widgets) {
+			widget.renderBackground(this, mouseX, mouseY);
+		}
 	}
 
 	@Override
@@ -60,16 +62,17 @@ public abstract class GenericGui extends GuiContainer {
 		// WIDGET
 		final ArrayList<String> tooltip = new ArrayList<>();
 
-		this.widgets.forEach(widget -> {
+		for (final GenericWidget widget : this.widgets) {
 			widget.renderForeground(this, mouseX, mouseY);
 
 			if (widget.isMouseInWidget(mouseX, mouseY)) {
 				widget.addInformation(tooltip);
 			}
-		});
+		}
 
-		Validate.notNull(tooltip);
-		this.drawHoveringText(tooltip, mouseX, mouseY, this.fontRendererObj);
+		if (!tooltip.isEmpty()) {
+			this.drawHoveringText(tooltip, mouseX, mouseY, this.fontRendererObj);
+		}
 	}
 
 	@Override

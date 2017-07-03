@@ -24,13 +24,15 @@ import net.minecraft.item.ItemStack;
  *
  * @author Le Thinh
  */
-public class FreezerRecipe {
+public class NeonItemMakerRecipe {
 
-	public final ItemStack input;
+	public final ItemStack input_1;
+	public final ItemStack input_2;
 	public final ItemStack output;
 
-	public FreezerRecipe(@Nonnull ItemStack input, @Nonnull ItemStack output) {
-		this.input = input;
+	public NeonItemMakerRecipe(@Nonnull ItemStack input_1, @Nonnull ItemStack input_2, ItemStack output) {
+		this.input_1 = input_1;
+		this.input_2 = input_2;
 		this.output = output;
 	}
 

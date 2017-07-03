@@ -18,7 +18,9 @@ package io.lethinh.matterexpansion.tile;
 
 import javax.annotation.Nonnull;
 
+import io.lethinh.matterexpansion.gui.GenericContainer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
@@ -26,25 +28,25 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  *
  * @author Le Thinh
  */
-public abstract class GenericMachineTile extends GenericPowerTile
-		implements ISidedInventory, ITickable {
+public abstract class GenericMachineTile extends GenericPowerTile implements ISidedInventory, ITickable {
 
 	protected NonNullList<ItemStack> stacks;
 	protected long ticks;
 	protected boolean isActive;
 	public int progress;
 
-	public GenericMachineTile(int size, String name) {
-		super(name);
+	public GenericMachineTile(int size) {
 		this.stacks = NonNullList.withSize(size, ItemStack.EMPTY);
 		this.ticks = 0;
 		this.isActive = false;
-		this.progress = -1;
+		this.progress = 0;
 	}
 
 	@Override
@@ -145,7 +147,7 @@ public abstract class GenericMachineTile extends GenericPowerTile
 
 	@Override
 	public String getName() {
-		return this.name;
+		return "";
 	}
 
 	@Override
@@ -182,9 +184,11 @@ public abstract class GenericMachineTile extends GenericPowerTile
 
 			this.isActive = true;
 			this.doClientWork();
+			this.markDirty();
 		} else if (this.isActive) {
 			this.isActive = false;
 			this.stopWorking();
+			this.markDirty();
 		}
 	}
 
@@ -214,4 +218,14 @@ public abstract class GenericMachineTile extends GenericPowerTile
 	 * (reset the timer, set the block state, ...)
 	 */
 	protected abstract void stopWorking();
+
+	/* CONTAINER */
+	@SideOnly(Side.CLIENT)
+	public void getGuiNetworkData(int data, int value) {
+		this.progress = value;
+	}
+
+	public void sendGuiNetworkData(GenericContainer container, IContainerListener listener) {
+		listener.sendProgressBarUpdate(container, 0, this.progress);
+	}
 }

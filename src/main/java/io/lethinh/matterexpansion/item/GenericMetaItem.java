@@ -16,7 +16,8 @@
 
 package io.lethinh.matterexpansion.item;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Nonnull;
 
@@ -37,7 +38,8 @@ import net.minecraftforge.oredict.OreDictionary;
  */
 public abstract class GenericMetaItem extends GenericItem {
 
-	protected final HashMap<Integer, String> names = new HashMap<>();
+	// Sort the meta items names.
+	protected final TreeMap<Integer, String> names = new TreeMap<>();
 
 	public GenericMetaItem(String name) {
 		super(name);
@@ -48,9 +50,9 @@ public abstract class GenericMetaItem extends GenericItem {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void getSubItems(Item item, CreativeTabs tabs, NonNullList<ItemStack> subItems) {
-		this.names.entrySet().forEach(entry -> {
+		for (final Map.Entry<Integer, String> entry : this.names.entrySet()) {
 			subItems.add(new ItemStack(item, 1, entry.getKey()));
-		});
+		}
 	}
 
 	@Override
@@ -62,10 +64,10 @@ public abstract class GenericMetaItem extends GenericItem {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerItemModel() {
-		this.names.entrySet().forEach(entry -> {
-			ModelLoader.setCustomModelResourceLocation(this, entry.getKey(), new ModelResourceLocation(
-					this.getRegistryName(), "type=" + this.names.get(entry.getValue())));
-		});
+		for (final Map.Entry<Integer, String> entry : this.names.entrySet()) {
+			ModelLoader.setCustomModelResourceLocation(this, entry.getKey(),
+					new ModelResourceLocation(this.getRegistryName(), "type=" + this.names.get(entry.getValue())));
+		}
 	}
 
 	/* META */
