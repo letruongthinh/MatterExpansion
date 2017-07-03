@@ -106,22 +106,8 @@ public class TileSolderingStation extends GenericMachineCraftingTile implements 
 	/* WORK */
 	@Override
 	protected boolean canWork() {
-		boolean matchesRecipe = false;
-		boolean matchesFluid = false;
-		final SolderRecipe recipe = ModCrafting.findMatchingRecipe(this.craftMatrix);
-		final SolderMeltingRecipe meltingRecipe = ModCrafting
-				.findMatchingMeltingRecipe(this.getStackInSlot(this.SLOT_MELT));
-
-		IntStream.range(0, this.craftMatrix.getSizeInventory())
-				.filter(i -> !this.craftMatrix.getStackInSlot(i).isEmpty())
-				.forEach(i -> this.craftMatrix.stacksList.set(i, this.craftMatrix.getStackInSlot(i)));
-
-		matchesRecipe = recipe.recipe.matches(this.craftMatrix);
-		final FluidStack toDrain = recipe.fluid;
-		final FluidStack drained = this.tank.drainInternal(toDrain, false);
-		matchesFluid = drained != null && drained.isFluidStackIdentical(toDrain);
-
-		return matchesRecipe && matchesFluid;
+		return true; // There is no conditions here. The conditions are at
+						// doClientWork.
 	}
 
 	@Override
@@ -133,7 +119,7 @@ public class TileSolderingStation extends GenericMachineCraftingTile implements 
 		// I only apply the timer the soldering process, not the melting
 		// process.
 		if (this.progress >= this.maxTime && this.getEnergyStored() >= 4000
-				&& this.tank.getFluidAmount() >= this.fluidRequired) {
+				&& this.tank.getFluidAmount() >= this.fluidRequired && recipe.recipe.matches(this.craftMatrix)) {
 			IntStream.range(0, this.craftMatrix.getSizeInventory()).forEach(i -> {
 				// The input fluid of the recipe.
 				final FluidStack toDrain = recipe.fluid;
@@ -161,12 +147,15 @@ public class TileSolderingStation extends GenericMachineCraftingTile implements 
 					this.craftMatrix.markDirty();
 					this.extractEnergy(4000);
 					this.progress = 0;
+				} else {
+					this.progress = 0;
 				}
 			});
 		}
 
-		if (this.getStackInSlot(this.SLOT_MELT).isItemEqual(meltingRecipe.input)
-				&& this.tank.getFluidAmount() < this.tank.getCapacity() && this.getEnergyStored() >= 500) {
+		if (!this.getStackInSlot(this.SLOT_MELT).isEmpty()
+				&& this.getStackInSlot(this.SLOT_MELT).isItemEqual(meltingRecipe.input)
+				&& this.getEnergyStored() >= 500) {
 			final FluidStack fluidOutput = meltingRecipe.output;
 
 			if (this.tank.fillInternal(fluidOutput, false) == fluidOutput.amount) {
@@ -201,11 +190,10 @@ public class TileSolderingStation extends GenericMachineCraftingTile implements 
 
 	private SolderRecipe getCurrentRecipe() {
 		final FluidStack fluid = this.tank.getFluid();
-		final SolderRecipe recipe = ModCrafting.findMatchingRecipe(this.craftMatrix);
-		Validate.notNull(fluid);
+		final SolderRecipe recipe = ModCrafting.findMatchingSolderRecipe(this.craftMatrix);
 		Validate.notNull(recipe);
 
-		if (!fluid.isFluidStackIdentical(recipe.fluid))
+		if (fluid != null && !fluid.isFluidStackIdentical(recipe.fluid))
 			return null;
 
 		return recipe;
@@ -214,11 +202,10 @@ public class TileSolderingStation extends GenericMachineCraftingTile implements 
 	private SolderMeltingRecipe getCurrentMeltingRecipe() {
 		final FluidStack fluid = this.tank.getFluid();
 		final SolderMeltingRecipe recipe = ModCrafting
-				.findMatchingMeltingRecipe(this.getStackInSlot(this.SLOT_MELT));
-		Validate.notNull(fluid);
+				.findMatchingSolderMeltingRecipe(this.getStackInSlot(this.SLOT_MELT));
 		Validate.notNull(recipe);
 
-		if (!fluid.isFluidStackIdentical(recipe.output))
+		if (fluid != null && !fluid.isFluidStackIdentical(recipe.output))
 			return null;
 
 		return recipe;

@@ -20,8 +20,6 @@ import java.io.IOException;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang3.Validate;
-
 import io.lethinh.matterexpansion.network.EligiblePacketBuffer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
@@ -38,22 +36,16 @@ public class EligibleTank extends FluidTank implements IBlobsWrapper {
 
 	public EligibleTank(TileEntity tile, int capacity) {
 		super(capacity);
-		Validate.notNull(this.tile);
-		
 		this.tile = tile;
 	}
 
 	public EligibleTank(TileEntity tile, @Nullable FluidStack fluidStack, int capacity) {
 		super(fluidStack, capacity);
-		Validate.notNull(this.tile);
-		
 		this.tile = tile;
 	}
 
 	public EligibleTank(TileEntity tile, Fluid fluid, int amount, int capacity) {
 		super(fluid, amount, capacity);
-		Validate.notNull(this.tile);
-		
 		this.tile = tile;
 	}
 

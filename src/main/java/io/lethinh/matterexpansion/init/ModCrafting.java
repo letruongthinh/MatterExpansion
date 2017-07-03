@@ -73,12 +73,11 @@ public class ModCrafting {
 	}
 
 	/* SOLDER */
-	public static void addSolderRecipe(FluidStack fluid, ItemStack result,
-			Object... recipe) {
+	public static void addSolderRecipe(FluidStack fluid, ItemStack result, Object... recipe) {
 		SOLDER_RECIPES.add(new SolderRecipe(fluid, result, recipe));
 	}
 
-	public static SolderRecipe findMatchingRecipe(PerpetualInventoryCrafting craftMatrix) {
+	public static SolderRecipe findMatchingSolderRecipe(PerpetualInventoryCrafting craftMatrix) {
 		return SOLDER_RECIPES.stream().filter(recipe -> recipe.recipe.matches(craftMatrix)).findFirst()
 				.orElse(null);
 	}
@@ -87,10 +86,9 @@ public class ModCrafting {
 		SOLDER_MELTING_RECIPES.add(new SolderMeltingRecipe(input, result, fluidPerMelt));
 	}
 
-	public static SolderMeltingRecipe findMatchingMeltingRecipe(@Nonnull ItemStack input) {
-		SOLDER_MELTING_RECIPES.stream().filter(recipe -> OreDictionary.itemMatches(recipe.input, input, true))
+	public static SolderMeltingRecipe findMatchingSolderMeltingRecipe(@Nonnull ItemStack input) {
+		return SOLDER_MELTING_RECIPES.stream().filter(recipe -> OreDictionary.itemMatches(recipe.input, input, true))
 				.findFirst().orElse(null);
-		return null;
 	}
 
 }

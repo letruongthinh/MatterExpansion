@@ -96,7 +96,11 @@ public class TileFreezer extends GenericMachineTile implements IGuiTile {
 	@Override
 	protected boolean canWork() {
 		final FreezerRecipe recipe = this.getCurrentRecipe();
-		return this.getEnergyStored() >= 2000 && this.progress >= this.maxTime;
+		return this.getEnergyStored() >= 2000 && this.progress >= this.maxTime
+				&& !this.getStackInSlot(this.SLOT_INPUT).isEmpty()
+				&& this.getStackInSlot(this.SLOT_INPUT).isItemEqual(recipe.input)
+				&& (this.getStackInSlot(this.SLOT_OUTPUT).isEmpty()
+						|| recipe.output.isItemEqual(this.getStackInSlot(this.SLOT_OUTPUT)));
 	}
 
 	@Override
