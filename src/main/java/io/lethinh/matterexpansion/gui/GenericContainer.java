@@ -89,7 +89,7 @@ public abstract class GenericContainer<TE extends GenericTile> extends Container
 	 * Draws the inventory of the player.
 	 *
 	 * @param inventoryPlayer
-	 *            The current inventory of the player.
+	 *            The inventory of the player needs to draw.
 	 * @param x
 	 *            The X (integer) of the inventory player's location.
 	 * @param y
@@ -116,7 +116,7 @@ public abstract class GenericContainer<TE extends GenericTile> extends Container
 	 * {@link Container#onCraftMatrixChanged}.
 	 *
 	 * @param craftMatrix
-	 *            The craft matrix needs to add.
+	 *            The craft matrix needs to draw.
 	 * @param x
 	 *            The X (integer) of the inventory player's location.
 	 * @param y
