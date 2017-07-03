@@ -44,6 +44,15 @@ public abstract class GenericContainer<TE extends GenericTile> extends Container
 	@Nonnull
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int index) {
+		// Cannot transfer stack because the player cannot interact with the
+		// inventory.
+		if (!this.canInteractWith(player))
+			return ItemStack.EMPTY;
+
+		// Cannot transfer stack because there is no slot in the inventory
+		if (this.playerInventoryStart <= -1)
+			return ItemStack.EMPTY;
+		
 		final Slot slot = this.inventorySlots.get(index);
 		ItemStack itemStack = ItemStack.EMPTY;
 
