@@ -16,13 +16,8 @@
 
 package io.lethinh.matterexpansion.tile;
 
-import java.io.IOException;
-
 import javax.annotation.Nonnull;
 
-import io.lethinh.matterexpansion.init.PacketHandler;
-import io.lethinh.matterexpansion.network.EligiblePacketBuffer;
-import io.lethinh.matterexpansion.network.packet.PacketTileUpdate;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -41,7 +36,7 @@ public abstract class GenericMachineTile extends GenericPowerTile
 
 	protected NonNullList<ItemStack> stacks;
 	protected long ticks;
-	protected boolean isActive, needsNetworkUpdate;
+	protected boolean isActive;
 	public int progress;
 
 	public GenericMachineTile(int size, String name) {
@@ -60,7 +55,6 @@ public abstract class GenericMachineTile extends GenericPowerTile
 		this.ticks = compound.getLong("Ticks");
 		this.progress = compound.getInteger("Progress");
 		this.isActive = compound.getBoolean("IsActive");
-		this.needsNetworkUpdate = compound.getBoolean("NeedsNetworkUpdate");
 	}
 
 	@Override
@@ -69,7 +63,6 @@ public abstract class GenericMachineTile extends GenericPowerTile
 		compound.setLong("Ticks", this.ticks);
 		compound.setInteger("Progress", this.progress);
 		compound.setBoolean("IsActive", this.isActive);
-		compound.setBoolean("NeedsNetworkUpdate", this.needsNetworkUpdate);
 		return super.writeToNBT(compound);
 	}
 
@@ -184,22 +177,14 @@ public abstract class GenericMachineTile extends GenericPowerTile
 		}
 
 		if (this.canWork()) {
-			if (!this.isActive) {
-				this.needsNetworkUpdate = true;
-			}
+			if (!this.isActive)
+				return;
 
 			this.isActive = true;
 			this.doClientWork();
 		} else if (this.isActive) {
 			this.isActive = false;
 			this.stopWorking();
-		}
-
-		if (this.needsNetworkUpdate) {
-			this.needsNetworkUpdate = false;
-			PacketHandler.sendToServer(new PacketTileUpdate(this.pos, this.getUpdateTag()));
-		} else {
-			this.needsNetworkUpdate = true;
 		}
 	}
 
@@ -229,26 +214,4 @@ public abstract class GenericMachineTile extends GenericPowerTile
 	 * (reset the timer, set the block state, ...)
 	 */
 	protected abstract void stopWorking();
-
-	/* PACKET */
-	@Override
-	public void loadBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		super.loadBlobsTickets(packet);
-		this.stacks = packet.readItemStacks();
-		this.ticks = packet.readLong();
-		this.progress = packet.readInt();
-		this.isActive = packet.readBoolean();
-		this.needsNetworkUpdate = packet.readBoolean();
-	}
-
-	@Override
-	public void saveBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		super.saveBlobsTickets(packet);
-		packet.writeItemStacks(this.stacks);
-		packet.writeLong(this.ticks);
-		packet.writeInt(this.progress);
-		packet.writeBoolean(this.isActive);
-		packet.writeBoolean(this.needsNetworkUpdate);
-	}
-
 }

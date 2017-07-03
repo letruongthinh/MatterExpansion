@@ -16,23 +16,26 @@
 
 package io.lethinh.matterexpansion.block;
 
-import net.minecraft.block.Block;
+import javax.annotation.Nonnull;
+
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
 /**
  *
  * @author Le Thinh
  */
-public class ItemBlockMetal extends GenericItemBlock {
+public class ItemBlockMetal extends ItemBlock {
 
-	public ItemBlockMetal(Block block) {
-		super(block);
+	public ItemBlockMetal() {
+		super(new BlockMetal());
+		this.setRegistryName(this.block.getRegistryName());
 		this.setMaxDamage(0);
 		this.setHasSubtypes(true);
 	}
 
 	@Override
-	public String getUnlocalizedName(ItemStack stack) {
+	public String getUnlocalizedName(@Nonnull ItemStack stack) {
 		return super.getUnlocalizedName(stack) + "." + BlockMetal.MetalType.byMetadata(stack.getMetadata()).getName();
 	}
 

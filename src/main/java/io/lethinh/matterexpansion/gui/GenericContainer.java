@@ -44,9 +44,6 @@ public abstract class GenericContainer<TE extends GenericTile> extends Container
 	@Nonnull
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int index) {
-		if (!this.canInteractWith(player))
-			return ItemStack.EMPTY;
-
 		final Slot slot = this.inventorySlots.get(index);
 		ItemStack itemStack = ItemStack.EMPTY;
 
@@ -61,7 +58,7 @@ public abstract class GenericContainer<TE extends GenericTile> extends Container
 
 				slot.onSlotChange(itemStack1, itemStack);
 			} else if (!this.mergeItemStack(itemStack1, 0, this.playerInventoryStart, false))
-				return null;
+				return ItemStack.EMPTY;
 
 			if (itemStack1.isEmpty()) {
 				slot.putStack(ItemStack.EMPTY);
@@ -78,6 +75,15 @@ public abstract class GenericContainer<TE extends GenericTile> extends Container
 		return itemStack;
 	}
 
+	@Override
+	protected Slot addSlotToContainer(Slot slot) {
+		if (this.playerInventoryStart >= 0)
+			throw new RuntimeException(
+					"Player inventory has to be last slot! Add all slots before adding the player inventory!");
+
+		return super.addSlotToContainer(slot);
+	}
+
 	/* INVENTORY */
 	/**
 	 * Draws the inventory of the player.
@@ -85,11 +91,9 @@ public abstract class GenericContainer<TE extends GenericTile> extends Container
 	 * @param inventoryPlayer
 	 *            The current inventory of the player.
 	 * @param x
-	 *            The X (integer) of the inventory player's location. Default
-	 *            value: 8
+	 *            The X (integer) of the inventory player's location.
 	 * @param y
-	 *            The Y (integer) of the inventory player's location. Default
-	 *            value: 84
+	 *            The Y (integer) of the inventory player's location.
 	 */
 	protected void drawPlayerInventory(InventoryPlayer inventoryPlayer, int x, int y) {
 		this.playerInventoryStart = this.inventorySlots.size();
@@ -114,11 +118,9 @@ public abstract class GenericContainer<TE extends GenericTile> extends Container
 	 * @param craftMatrix
 	 *            The craft matrix needs to add.
 	 * @param x
-	 *            The X (integer) of the inventory player's location. Default
-	 *            value: 30
+	 *            The X (integer) of the inventory player's location.
 	 * @param y
-	 *            The Y (integer) of the inventory player's location. Default
-	 *            value: 17
+	 *            The Y (integer) of the inventory player's location.
 	 */
 	protected void drawCraftingInventory(PerpetualInventoryCrafting craftMatrix, int x, int y, Container container) {
 		for (int row = 0; row < 3; ++row) {
@@ -129,7 +131,7 @@ public abstract class GenericContainer<TE extends GenericTile> extends Container
 		}
 
 		craftMatrix.eventHandler = container; // Now, it is time to assign the
-												// value.
+												// container.
 		container.onCraftMatrixChanged(craftMatrix); // Updates the craft
 														// matrix.
 	}

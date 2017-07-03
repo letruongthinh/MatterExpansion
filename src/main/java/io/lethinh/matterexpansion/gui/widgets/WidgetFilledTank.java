@@ -16,13 +16,12 @@
 
 package io.lethinh.matterexpansion.gui.widgets;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import io.lethinh.matterexpansion.backend.utils.StringUtils;
 import io.lethinh.matterexpansion.gui.GenericGui;
-import io.lethinh.matterexpansion.network.EligiblePacketBuffer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -38,12 +37,11 @@ public class WidgetFilledTank extends GenericWidget {
 	private static final ResourceLocation texFluidFull = StringUtils
 			.prefixResourceLocation("textures/gui/widgets/widget_energy_ful.png");
 
-	private int fluidAmount, capacity = 0;
+	private final IFluidTank tank;
 
-	public WidgetFilledTank(int x, int y, int fluidAmount, int capacity) {
+	public WidgetFilledTank(int x, int y, IFluidTank tank) {
 		super(x, y, 18, 54);
-		this.fluidAmount = fluidAmount;
-		this.capacity = capacity;
+		this.tank = tank;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -56,8 +54,8 @@ public class WidgetFilledTank extends GenericWidget {
 		final int pixels = 24;
 		int scale = 0;
 
-		if (this.fluidAmount > 0 && this.capacity > 0) {
-			scale = pixels * this.fluidAmount / this.capacity;
+		if (this.tank.getFluidAmount() > 0 && this.tank.getCapacity() > 0) {
+			scale = pixels * this.tank.getFluidAmount() / this.tank.getCapacity();
 		}
 
 		gui.drawTexturedModalRect(this.getX(), this.getY(), 0, 0, this.getWidth(), scale);
@@ -67,22 +65,8 @@ public class WidgetFilledTank extends GenericWidget {
 	@Override
 	public void addInformation(ArrayList<String> tooltip) {
 		if (tooltip != null) {
-			tooltip.add(StringUtils.prefixNumber(this.fluidAmount, this.capacity));
+			tooltip.add(StringUtils.prefixNumber(this.tank.getFluidAmount(), this.tank.getCapacity()));
 		}
-	}
-
-	@Override
-	public void loadBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		super.loadBlobsTickets(packet);
-		this.fluidAmount = packet.readInt();
-		this.capacity = packet.readInt();
-	}
-
-	@Override
-	public void saveBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		super.saveBlobsTickets(packet);
-		packet.writeInt(this.fluidAmount);
-		packet.writeInt(this.capacity);
 	}
 
 }

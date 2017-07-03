@@ -17,12 +17,9 @@
 package io.lethinh.matterexpansion.gui.widgets;
 
 import java.awt.Rectangle;
-import java.io.IOException;
 import java.util.ArrayList;
 
-import io.lethinh.matterexpansion.backend.helpers.IBlobsWrapper;
 import io.lethinh.matterexpansion.gui.GenericGui;
-import io.lethinh.matterexpansion.network.EligiblePacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -31,7 +28,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * @author Le Thinh
  */
 @SideOnly(Side.CLIENT)
-public class GenericWidget implements IBlobsWrapper {
+public class GenericWidget {
 
 	private final int x;
 	private final int y;
@@ -121,31 +118,6 @@ public class GenericWidget implements IBlobsWrapper {
 	 */
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ArrayList<String> tooltip) {
-	}
-
-	/* IBlobsWrapper */
-	/**
-	 * Called when the widget receives changes of the synced value from the
-	 * packet. Now is for iteration.
-	 *
-	 * @param packet
-	 *            The packet contains the synced value.
-	 */
-	@Override
-	public void loadBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-
-	}
-
-	/**
-	 * Called when the widget sends changes of the synced value to the packet.
-	 * Now is for iteration.
-	 *
-	 * @param packet
-	 *            The packet contains synced value.
-	 */
-	@Override
-	public void saveBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-
 	}
 
 	/**

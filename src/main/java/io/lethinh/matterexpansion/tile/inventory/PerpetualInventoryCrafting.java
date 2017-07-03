@@ -16,15 +16,9 @@
 
 package io.lethinh.matterexpansion.tile.inventory;
 
-import java.io.IOException;
-
 import javax.annotation.Nonnull;
 
-import io.lethinh.matterexpansion.backend.helpers.IBlobsWrapper;
 import io.lethinh.matterexpansion.backend.helpers.INBTWrapper;
-import io.lethinh.matterexpansion.init.PacketHandler;
-import io.lethinh.matterexpansion.network.EligiblePacketBuffer;
-import io.lethinh.matterexpansion.network.packet.PacketSyncCraftingInventory;
 import io.lethinh.matterexpansion.tile.GenericTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -38,16 +32,18 @@ import net.minecraft.util.text.TextComponentString;
 
 /**
  * This class is created in case if the inventory is cleared, it still has the
- * saved NBT and the packet blobs to retrieve the ItemStacks in blobs.
+ * saved NBT to retrieve the ItemStacks. There are no blobs here. There are only
+ * blobs for width and height of the craft matrix. It can cause unstable
+ * ItemStacks list size and can even cause crash because ItemStacks list size is
+ * too long.
  *
  * @author Le Thinh
  */
-public class PerpetualInventoryCrafting implements IInventory, IBlobsWrapper, INBTWrapper {
+public class PerpetualInventoryCrafting implements IInventory, INBTWrapper {
 
 	private final GenericTile tile;
 	public NonNullList<ItemStack> stacksList; // No final modifier, for reading
-												// and writing changes to packet
-												// in the network.
+												// and writing changes to NBT.
 	public int width;
 	public int height;
 	public Container eventHandler; // This is public because when you create a
@@ -62,10 +58,10 @@ public class PerpetualInventoryCrafting implements IInventory, IBlobsWrapper, IN
 
 	public PerpetualInventoryCrafting(GenericTile tile, int width, int height) {
 		this.tile = tile;
-		this.stacksList = NonNullList.withSize(width * height, ItemStack.EMPTY);
-		this.eventHandler = null; // Defines it later.
 		this.width = width;
 		this.height = height;
+		this.stacksList = NonNullList.withSize(width * height, ItemStack.EMPTY);
+		this.eventHandler = null; // Defines it later.
 	}
 
 	@Override
@@ -75,7 +71,7 @@ public class PerpetualInventoryCrafting implements IInventory, IBlobsWrapper, IN
 
 	@Override
 	public String getName() {
-		return this.toString();
+		return "perpetual_craft_matrix";
 	}
 
 	@Override
@@ -93,6 +89,7 @@ public class PerpetualInventoryCrafting implements IInventory, IBlobsWrapper, IN
 		return this.stacksList.stream().allMatch(stack -> !stack.isEmpty());
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getStackInSlot(int index) {
 		if (index >= this.getSizeInventory())
@@ -101,6 +98,7 @@ public class PerpetualInventoryCrafting implements IInventory, IBlobsWrapper, IN
 		return this.stacksList.get(index);
 	}
 
+	@Nonnull
 	public ItemStack getStackInRowAndColumn(int row, int column) {
 		if (row < 0 || column >= this.width || column < 0 || column > this.height)
 			return ItemStack.EMPTY;
@@ -137,12 +135,6 @@ public class PerpetualInventoryCrafting implements IInventory, IBlobsWrapper, IN
 	public void markDirty() {
 		this.eventHandler.onCraftMatrixChanged(this);
 		this.tile.markDirty();
-
-		// Send the packet to server. Because if the player is using this
-		// container and changes something that the server didn't know, but the
-		// player knew what has changed, because the player is interacting with
-		// the container. So I have to sync this inventory with the server.
-		PacketHandler.sendToServer(new PacketSyncCraftingInventory());
 	}
 
 	@Override
@@ -179,22 +171,7 @@ public class PerpetualInventoryCrafting implements IInventory, IBlobsWrapper, IN
 
 	@Override
 	public void clear() {
-		this.stacksList.clear();
-	}
-
-	/* IBlobsWrapper */
-	@Override
-	public void loadBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		this.stacksList = packet.readItemStacks();
-		this.width = packet.readInt();
-		this.height = packet.readInt();
-	}
-
-	@Override
-	public void saveBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		packet.writeItemStacks(this.stacksList);
-		packet.writeInt(this.width);
-		packet.writeInt(this.height);
+		// this.stacksList.clear(); Cannot clear because it is perpetual.
 	}
 
 	/* INBTWrapper */

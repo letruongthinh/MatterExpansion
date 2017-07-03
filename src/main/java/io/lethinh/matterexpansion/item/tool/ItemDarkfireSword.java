@@ -26,7 +26,7 @@ import codechicken.lib.model.bakery.generation.IItemBakery;
 import io.lethinh.matterexpansion.MatterExpansion;
 import io.lethinh.matterexpansion.backend.helpers.IItemModelRegister;
 import io.lethinh.matterexpansion.backend.model.ModelToolItem;
-import io.lethinh.matterexpansion.item.GenericItem;
+import io.lethinh.matterexpansion.backend.utils.AttributeUtils;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -102,9 +102,10 @@ public class ItemDarkfireSword extends ItemSword implements IItemModelRegister, 
 		final Multimap<String, AttributeModifier> modifierMap = super.getAttributeModifiers(slot, stack);
 
 		if (slot == EntityEquipmentSlot.MAINHAND) {
-			GenericItem.replaceItemAttributeModifier(modifierMap, SharedMonsterAttributes.ATTACK_SPEED,
-					ATTACK_SPEED_MODIFIER, 6.0D); // Super fast sword. Yay. 10
-													// attack speed
+			AttributeUtils.replaceAttribute(modifierMap, SharedMonsterAttributes.ATTACK_SPEED,
+					ATTACK_SPEED_MODIFIER, 6.0D); // Super fast sword. 10
+													// attack speed. Offset by
+													// 4.0D
 		}
 
 		return modifierMap;

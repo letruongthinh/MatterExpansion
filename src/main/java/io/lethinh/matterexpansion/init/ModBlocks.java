@@ -22,10 +22,10 @@ import io.lethinh.matterexpansion.backend.helpers.IItemModelRegister;
 import io.lethinh.matterexpansion.block.BlockFreezer;
 import io.lethinh.matterexpansion.block.BlockMetal;
 import io.lethinh.matterexpansion.block.BlockSolderingStation;
-import io.lethinh.matterexpansion.block.GenericItemBlock;
 import io.lethinh.matterexpansion.block.GenericTileBlock;
 import io.lethinh.matterexpansion.block.ItemBlockMetal;
 import net.minecraft.block.Block;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -47,7 +47,7 @@ public class ModBlocks {
 	public static void preInit() {
 		blockFreezer = registerBlock(new BlockFreezer());
 		blockSolderingStation = registerBlock(new BlockSolderingStation());
-		blockMetal = registerBlock(new BlockMetal(), new ItemBlockMetal(blockMetal));
+		blockMetal = registerBlock(new BlockMetal(), new ItemBlockMetal());
 
 		initMetaItemStacks();
 	}
@@ -61,10 +61,12 @@ public class ModBlocks {
 
 	/* REGISTRY */
 	private static <T extends Block> T registerBlock(T block) {
-		return registerBlock(block, new GenericItemBlock(block));
+		final ItemBlock itemBlock = new ItemBlock(block);
+		itemBlock.setRegistryName(block.getRegistryName());
+		return registerBlock(block, itemBlock);
 	}
 
-	private static <T extends Block> T registerBlock(T block, GenericItemBlock itemBlock) {
+	private static <T extends Block> T registerBlock(T block, ItemBlock itemBlock) {
 		Validate.notNull(block);
 		Validate.notNull(itemBlock);
 

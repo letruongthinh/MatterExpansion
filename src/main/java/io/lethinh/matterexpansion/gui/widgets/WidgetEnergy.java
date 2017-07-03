@@ -16,13 +16,12 @@
 
 package io.lethinh.matterexpansion.gui.widgets;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import cofh.api.energy.EnergyStorage;
+import cofh.api.energy.IEnergyStorage;
 import io.lethinh.matterexpansion.backend.utils.StringUtils;
 import io.lethinh.matterexpansion.gui.GenericGui;
-import io.lethinh.matterexpansion.network.EligiblePacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -39,7 +38,7 @@ public class WidgetEnergy extends GenericWidget {
 	private static final ResourceLocation texEnergyFull = StringUtils
 			.prefixResourceLocation("textures/gui/widgets/widget_energy_ful.png");
 
-	private final EnergyStorage energy;
+	private final IEnergyStorage energy;
 
 	public WidgetEnergy(int x, int y, EnergyStorage energy) {
 		super(x, y, 18, 54);
@@ -69,20 +68,6 @@ public class WidgetEnergy extends GenericWidget {
 		if (tooltip != null) {
 			tooltip.add(StringUtils.prefixRFEnergy(this.energy.getEnergyStored(), this.energy.getMaxEnergyStored()));
 		}
-	}
-
-	@Override
-	public void loadBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		super.loadBlobsTickets(packet);
-		this.energy.setEnergyStored(packet.readInt());
-		this.energy.setCapacity(packet.readInt());
-	}
-
-	@Override
-	public void saveBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		super.saveBlobsTickets(packet);
-		packet.writeInt(this.energy.getEnergyStored());
-		packet.writeInt(this.energy.getMaxEnergyStored());
 	}
 
 }

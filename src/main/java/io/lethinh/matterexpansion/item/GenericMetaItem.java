@@ -54,7 +54,7 @@ public abstract class GenericMetaItem extends GenericItem {
 	}
 
 	@Override
-	public String getUnlocalizedName(ItemStack stack) {
+	public String getUnlocalizedName(@Nonnull ItemStack stack) {
 		return super.getUnlocalizedName(stack) + "." + this.names.get(stack.getMetadata());
 	}
 

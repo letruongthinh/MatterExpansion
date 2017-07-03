@@ -16,14 +16,11 @@
 
 package io.lethinh.matterexpansion.item;
 
-import java.io.IOException;
 import java.util.List;
 
 import cofh.api.energy.IEnergyContainerItem;
-import io.lethinh.matterexpansion.backend.helpers.IBlobsWrapper;
 import io.lethinh.matterexpansion.backend.utils.ItemNBTUtils;
 import io.lethinh.matterexpansion.backend.utils.StringUtils;
-import io.lethinh.matterexpansion.network.EligiblePacketBuffer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -36,7 +33,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * @author Le Thinh
  */
-public class GenericEnergizedItem extends GenericItem implements IEnergyContainerItem, IBlobsWrapper {
+public class GenericEnergizedItem extends GenericItem implements IEnergyContainerItem {
 
 	protected int energy;
 	protected int capacity;
@@ -178,23 +175,6 @@ public class GenericEnergizedItem extends GenericItem implements IEnergyContaine
 		}
 
 		ItemNBTUtils.setInteger(container, "Energy", curEnergy);
-	}
-
-	/* PACKET */
-	@Override
-	public void loadBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		this.energy = packet.readInt();
-		this.capacity = packet.readInt();
-		this.maxExtract = packet.readInt();
-		this.maxReceive = packet.readInt();
-	}
-
-	@Override
-	public void saveBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		packet.writeInt(this.energy);
-		packet.writeInt(this.capacity);
-		packet.writeInt(this.maxExtract);
-		packet.writeInt(this.maxReceive);
 	}
 
 }

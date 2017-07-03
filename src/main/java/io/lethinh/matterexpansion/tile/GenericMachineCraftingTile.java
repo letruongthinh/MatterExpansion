@@ -16,14 +16,10 @@
 
 package io.lethinh.matterexpansion.tile;
 
-import java.io.IOException;
 import java.util.stream.IntStream;
 
 import javax.annotation.Nonnull;
 
-import io.lethinh.matterexpansion.init.PacketHandler;
-import io.lethinh.matterexpansion.network.EligiblePacketBuffer;
-import io.lethinh.matterexpansion.network.packet.PacketTileUpdate;
 import io.lethinh.matterexpansion.tile.inventory.PerpetualInventoryCrafting;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
@@ -44,7 +40,7 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 
 	protected NonNullList<ItemStack> stacks;
 	protected long ticks;
-	protected boolean isActive, needsNetworkUpdate;
+	protected boolean isActive;
 	public int progress;
 	public final PerpetualInventoryCrafting craftMatrix;
 
@@ -226,22 +222,14 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 		}
 
 		if (this.canWork()) {
-			if (!this.isActive) {
-				this.needsNetworkUpdate = true;
-			}
+			if (!this.isActive)
+				return;
 
 			this.doClientWork();
 			this.isActive = true;
 		} else if (this.isActive) {
 			this.stopWorking();
 			this.isActive = false;
-		}
-
-		if (this.needsNetworkUpdate) {
-			this.needsNetworkUpdate = false;
-			PacketHandler.sendToServer(new PacketTileUpdate(this.pos, this.getUpdateTag()));
-		} else {
-			this.needsNetworkUpdate = true;
 		}
 	}
 
@@ -254,7 +242,8 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 	protected abstract boolean canWork();
 
 	/**
-	 * Called when the tile works in server-side.
+	 * Called when the tile works in server-side. When the world is remote. Do
+	 * something such as update the timers or spawn the particles and etc.
 	 */
 	protected void doServerWork() {
 		this.ticks++;
@@ -268,23 +257,8 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 
 	/**
 	 * Called when the tile stops working. And do something when it stopped
-	 * (reset the timer, set the block state, ...)
+	 * working such as reset the timer or reset the block state and etc.
 	 */
 	protected abstract void stopWorking();
-
-	/* IBlobsWrapper */
-	@Override
-	public void loadBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		super.loadBlobsTickets(packet);
-		this.craftMatrix.loadBlobsTickets(packet);
-		this.stacks = packet.readItemStacks();
-	}
-
-	@Override
-	public void saveBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		super.saveBlobsTickets(packet);
-		this.craftMatrix.saveBlobsTickets(packet);
-		packet.writeItemStacks(this.stacks);
-	}
 
 }

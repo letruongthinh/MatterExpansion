@@ -16,11 +16,6 @@
 
 package io.lethinh.matterexpansion.item;
 
-import java.util.Collection;
-import java.util.UUID;
-
-import com.google.common.collect.Multimap;
-
 import codechicken.lib.model.ModelRegistryHelper;
 import codechicken.lib.model.bakery.CCBakeryModel;
 import codechicken.lib.model.bakery.IBakeryProvider;
@@ -30,8 +25,6 @@ import io.lethinh.matterexpansion.MatterExpansion;
 import io.lethinh.matterexpansion.backend.helpers.IItemModelRegister;
 import io.lethinh.matterexpansion.backend.model.ModelGenericItem;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
@@ -68,20 +61,6 @@ public abstract class GenericItem extends Item implements IItemModelRegister, IB
 	@Override
 	public IItemBakery getBakery() {
 		return ModelGenericItem.INSTANCE;
-	}
-
-	/* ATTRBIUTE */
-	public static void replaceItemAttributeModifier(Multimap<String, AttributeModifier> modifierMultimap,
-			IAttribute attribute, UUID uuid, double newModifierValue) {
-		final Collection<AttributeModifier> modifiers = modifierMultimap
-				.get(attribute.getName());
-
-		modifiers.stream().filter(modifier -> modifier.getID().equals(uuid)).forEach(attributeModifier -> {
-			modifiers.remove(attributeModifier);
-			modifiers
-					.add(new AttributeModifier(attributeModifier.getID(), attributeModifier.getName(), newModifierValue,
-							attributeModifier.getOperation()));
-		});
 	}
 
 }

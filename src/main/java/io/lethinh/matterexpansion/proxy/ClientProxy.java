@@ -25,7 +25,6 @@ import io.lethinh.matterexpansion.init.GuiHandler;
 import io.lethinh.matterexpansion.init.ModBlocks;
 import io.lethinh.matterexpansion.init.ModCrafting;
 import io.lethinh.matterexpansion.init.ModItems;
-import io.lethinh.matterexpansion.init.PacketHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
@@ -47,7 +46,6 @@ public class ClientProxy extends CommonProxy {
 	public void init() {
 		super.init();
 		NetworkRegistry.INSTANCE.registerGuiHandler(MatterExpansion.instance, new GuiHandler());
-		PacketHandler.init();
 	}
 
 	@Override

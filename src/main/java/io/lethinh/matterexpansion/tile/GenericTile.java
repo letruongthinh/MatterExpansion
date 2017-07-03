@@ -16,13 +16,9 @@
 
 package io.lethinh.matterexpansion.tile;
 
-import java.io.IOException;
-
 import javax.annotation.Nullable;
 
-import io.lethinh.matterexpansion.backend.helpers.IBlobsWrapper;
 import io.lethinh.matterexpansion.gui.GenericContainer;
-import io.lethinh.matterexpansion.network.EligiblePacketBuffer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.nbt.NBTTagCompound;
@@ -46,7 +42,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * @author Le Thinh
  */
-public abstract class GenericTile extends TileEntity implements IBlobsWrapper {
+public abstract class GenericTile extends TileEntity {
 
 	protected final String name;
 
@@ -121,17 +117,6 @@ public abstract class GenericTile extends TileEntity implements IBlobsWrapper {
 	@Nullable
 	public IEnergyStorage getEnergyHandler(EnumFacing facing) {
 		return null;
-	}
-
-	/* IBlobsWrapper */
-	@Override
-	public void loadBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		packet.writeBlockPos(this.pos);
-	}
-
-	@Override
-	public void saveBlobsTickets(EligiblePacketBuffer packet) throws IOException {
-		this.pos = packet.readBlockPos();
 	}
 
 	/* CONTAINER */

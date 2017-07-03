@@ -39,8 +39,7 @@ public class GuiSolderingStation extends GenericGui {
 		this.addWidget(new WidgetEnergy(150, 10, tile.energy));
 
 		// Widget Filled Tank
-		this.addWidget(
-				new WidgetFilledTank(26, 48, tile.tank.getFluidAmount(), tile.tank.getCapacity()));
+		this.addWidget(new WidgetFilledTank(26, 48, tile.tank));
 	}
 
 	/* TEXTURE */
