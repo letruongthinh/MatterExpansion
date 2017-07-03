@@ -44,7 +44,6 @@ public class PacketHandler {
 	private static int id = 0;
 
 	public static void init() {
-		// NETWORK
 		PacketHandler.networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(channelName);
 		PacketHandler.handler = new GenericPacketHandler();
 
@@ -98,7 +97,7 @@ public class PacketHandler {
 	}
 
 	private static void registerMessagePacket(Class<? extends GenericPacket> packetClazz, Side side) {
-		networkWrapper.registerMessage(PacketHandler.handler, packetClazz, PacketHandler.id++, side);
+		networkWrapper.registerMessage(handler, packetClazz, id++, side);
 	}
 
 	public static class GenericPacketHandler implements IMessageHandler<GenericPacket, IMessage> {
