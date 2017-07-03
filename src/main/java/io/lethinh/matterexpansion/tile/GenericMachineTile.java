@@ -42,9 +42,8 @@ public abstract class GenericMachineTile extends GenericPowerTile
 	protected NonNullList<ItemStack> stacks;
 	protected EnumFacing side;
 	protected long ticks;
-	protected boolean isActive;
+	protected boolean isActive, needsNetworkUpdate;
 	public int progress;
-	public boolean needsNetworkUpdate;
 
 	public GenericMachineTile(int size, String name) {
 		super(name);
@@ -57,11 +56,14 @@ public abstract class GenericMachineTile extends GenericPowerTile
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
+		super.readFromNBT(compound);
+
 		ItemStackHelper.loadAllItems(compound, this.stacks);
 		this.side = EnumFacing.values()[compound.getByte("Side")];
 		this.ticks = compound.getLong("Ticks");
 		this.progress = compound.getInteger("Progress");
-		super.readFromNBT(compound);
+		this.isActive = compound.getBoolean("IsActive");
+		this.needsNetworkUpdate = compound.getBoolean("NeedsNetworkUpdate");
 	}
 
 	@Override
@@ -70,6 +72,8 @@ public abstract class GenericMachineTile extends GenericPowerTile
 		compound.setByte("Side", (byte) this.side.ordinal());
 		compound.setLong("Ticks", this.ticks);
 		compound.setInteger("Progress", this.progress);
+		compound.setBoolean("IsActive", this.isActive);
+		compound.setBoolean("NeedsNetworkUpdate", this.needsNetworkUpdate);
 		return super.writeToNBT(compound);
 	}
 
@@ -197,7 +201,7 @@ public abstract class GenericMachineTile extends GenericPowerTile
 
 		if (this.needsNetworkUpdate) {
 			this.needsNetworkUpdate = false;
-			PacketHandler.sendToServer(new PacketTileUpdate(this.pos));
+			PacketHandler.sendToServer(new PacketTileUpdate(this.pos, this.getUpdateTag()));
 		} else {
 			this.needsNetworkUpdate = true;
 		}
@@ -238,6 +242,8 @@ public abstract class GenericMachineTile extends GenericPowerTile
 		this.side = packet.readSide();
 		this.ticks = packet.readLong();
 		this.progress = packet.readInt();
+		this.isActive = packet.readBoolean();
+		this.needsNetworkUpdate = packet.readBoolean();
 	}
 
 	@Override
@@ -247,6 +253,8 @@ public abstract class GenericMachineTile extends GenericPowerTile
 		packet.writeSide(this.side);
 		packet.writeLong(this.ticks);
 		packet.writeInt(this.progress);
+		packet.writeBoolean(this.isActive);
+		packet.writeBoolean(this.needsNetworkUpdate);
 	}
 
 }

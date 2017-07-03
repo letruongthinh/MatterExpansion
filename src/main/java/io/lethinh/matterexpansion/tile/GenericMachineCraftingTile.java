@@ -21,10 +21,13 @@ import java.util.stream.IntStream;
 
 import javax.annotation.Nonnull;
 
+import io.lethinh.matterexpansion.init.PacketHandler;
 import io.lethinh.matterexpansion.network.EligiblePacketBuffer;
+import io.lethinh.matterexpansion.network.packet.PacketTileUpdate;
 import io.lethinh.matterexpansion.tile.inventory.PerpetualInventoryCrafting;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -42,7 +45,7 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 	protected NonNullList<ItemStack> stacks;
 	protected EnumFacing side;
 	protected long ticks;
-	protected boolean isActive;
+	protected boolean isActive, needsNetworkUpdate;
 	public int progress;
 	public final PerpetualInventoryCrafting craftMatrix;
 
@@ -63,6 +66,7 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 
 		final NBTTagList tagList = compound.getTagList("Items", 10);
 
+		this.craftMatrix.readFromNBT(compound);
 		IntStream.range(0, tagList.tagCount()).forEach(i -> {
 			final NBTTagCompound itemTags = tagList.getCompoundTagAt(i);
 			final int index = itemTags.getByte("Slot") & 0xFF;
@@ -82,6 +86,7 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		final NBTTagList tagList = new NBTTagList();
 
+		this.craftMatrix.writeToNBT(compound);
 		IntStream.range(0, this.stacks.size()).filter(i -> !this.stacks.get(i).isEmpty()).forEach(i -> {
 			final ItemStack stack = this.stacks.get(i);
 
@@ -92,15 +97,6 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 				tagList.appendTag(itemTags);
 			}
 		});
-
-		IntStream.range(0, this.craftMatrix.getSizeInventory())
-				.filter(i -> !this.craftMatrix.getStackInSlot(i).isEmpty()).forEach(i -> {
-					final ItemStack stack = this.craftMatrix.getStackInSlot(i);
-					final NBTTagCompound itemTags = new NBTTagCompound();
-					itemTags.setByte("Slot", (byte) (i + this.stacks.size()));
-					stack.writeToNBT(itemTags);
-					tagList.appendTag(itemTags);
-				});
 
 		if (!tagList.hasNoTags()) {
 			compound.setTag("Items", tagList);
@@ -126,27 +122,7 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 		if (index >= this.stacks.size())
 			return this.craftMatrix.decrStackSize(index - this.craftMatrix.getSizeInventory(), count);
 
-		if (!this.stacks.get(index).isEmpty()) {
-			ItemStack itemStack;
-
-			if (this.stacks.get(index).getCount() <= count) {
-				itemStack = this.stacks.get(index);
-				this.stacks.set(index, ItemStack.EMPTY);
-				this.markDirty();
-				return itemStack;
-			} else {
-				itemStack = this.stacks.get(index).splitStack(count);
-
-				if (this.stacks.get(index).isEmpty()) {
-					this.stacks.set(index, ItemStack.EMPTY);
-				}
-
-				this.markDirty();
-				return itemStack;
-			}
-		}
-
-		return ItemStack.EMPTY;
+		return ItemStackHelper.getAndSplit(this.stacks, index, count);
 	}
 
 	@Override
@@ -204,13 +180,7 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 		if (index >= this.stacks.size())
 			return this.craftMatrix.removeStackFromSlot(index - this.stacks.size());
 
-		if (!this.stacks.get(index).isEmpty()) {
-			final ItemStack itemStack = this.stacks.get(index);
-			this.stacks.set(index, ItemStack.EMPTY);
-			return itemStack;
-		}
-
-		return ItemStack.EMPTY;
+		return ItemStackHelper.getAndRemove(this.stacks, index);
 	}
 
 	@Override
@@ -260,14 +230,22 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 		}
 
 		if (this.canWork()) {
-			if (!this.isActive)
-				return;
+			if (!this.isActive) {
+				this.needsNetworkUpdate = true;
+			}
 
 			this.doClientWork();
 			this.isActive = true;
 		} else if (this.isActive) {
 			this.stopWorking();
 			this.isActive = false;
+		}
+
+		if (this.needsNetworkUpdate) {
+			this.needsNetworkUpdate = false;
+			PacketHandler.sendToServer(new PacketTileUpdate(this.pos, this.getUpdateTag()));
+		} else {
+			this.needsNetworkUpdate = true;
 		}
 	}
 
@@ -298,10 +276,11 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 	 */
 	protected abstract void stopWorking();
 
-	/* PACKET */
+	/* IBlobsWrapper */
 	@Override
 	public void loadBlobsTickets(EligiblePacketBuffer packet) throws IOException {
 		super.loadBlobsTickets(packet);
+		this.craftMatrix.loadBlobsTickets(packet);
 		this.stacks = packet.readItemStacks();
 		this.side = packet.readSide();
 	}
@@ -309,6 +288,7 @@ public abstract class GenericMachineCraftingTile extends GenericPowerTile
 	@Override
 	public void saveBlobsTickets(EligiblePacketBuffer packet) throws IOException {
 		super.saveBlobsTickets(packet);
+		this.craftMatrix.saveBlobsTickets(packet);
 		packet.writeItemStacks(this.stacks);
 		packet.writeSide(this.side);
 	}

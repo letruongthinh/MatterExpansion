@@ -25,10 +25,7 @@ import io.lethinh.matterexpansion.gui.ContainerFreezer;
 import io.lethinh.matterexpansion.gui.GenericContainer;
 import io.lethinh.matterexpansion.gui.GuiFreezer;
 import io.lethinh.matterexpansion.init.ModCrafting;
-import io.lethinh.matterexpansion.init.PacketHandler;
-import io.lethinh.matterexpansion.network.packet.PacketTileUpdate;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -104,7 +101,6 @@ public class TileFreezer extends GenericMachineTile implements IGuiTile {
 
 	@Override
 	protected void doClientWork() {
-		this.progress++;
 		final FreezerRecipe currentRecipe = this.getCurrentRecipe();
 		final ItemStack output = InventoryUtils.copyItemStack(currentRecipe.output);
 
@@ -117,6 +113,12 @@ public class TileFreezer extends GenericMachineTile implements IGuiTile {
 		this.markDirty();
 		this.extractEnergy(2000);
 		this.progress = 0;
+	}
+
+	@Override
+	protected void doServerWork() {
+		super.doServerWork();
+		this.progress++;
 	}
 
 	@Override

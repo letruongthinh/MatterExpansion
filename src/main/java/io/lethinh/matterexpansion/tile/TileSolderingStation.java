@@ -31,10 +31,7 @@ import io.lethinh.matterexpansion.gui.ContainerSolderingStation;
 import io.lethinh.matterexpansion.gui.GenericContainer;
 import io.lethinh.matterexpansion.gui.GuiSolderingStation;
 import io.lethinh.matterexpansion.init.ModCrafting;
-import io.lethinh.matterexpansion.init.PacketHandler;
-import io.lethinh.matterexpansion.network.packet.PacketTileUpdate;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -129,7 +126,6 @@ public class TileSolderingStation extends GenericMachineCraftingTile implements 
 
 	@Override
 	protected void doClientWork() {
-		this.progress++;
 		final SolderRecipe recipe = this.getCurrentRecipe();
 		final SolderMeltingRecipe meltingRecipe = this.getCurrentMeltingRecipe();
 		final ItemStack output = InventoryUtils.copyItemStack(recipe.recipe.getRecipeOutput());
@@ -184,6 +180,12 @@ public class TileSolderingStation extends GenericMachineCraftingTile implements 
 			this.markDirty();
 			this.extractEnergy(500);
 		}
+	}
+
+	@Override
+	protected void doServerWork() {
+		super.doServerWork();
+		this.progress++;
 	}
 
 	@Override

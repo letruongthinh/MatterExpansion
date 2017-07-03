@@ -21,6 +21,7 @@ import java.io.IOException;
 import javax.annotation.Nonnull;
 
 import io.lethinh.matterexpansion.backend.helpers.IBlobsWrapper;
+import io.lethinh.matterexpansion.backend.helpers.INBTWrapper;
 import io.lethinh.matterexpansion.init.PacketHandler;
 import io.lethinh.matterexpansion.network.EligiblePacketBuffer;
 import io.lethinh.matterexpansion.network.packet.PacketSyncCraftingInventory;
@@ -30,6 +31,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
@@ -40,14 +42,14 @@ import net.minecraft.util.text.TextComponentString;
  *
  * @author Le Thinh
  */
-public class PerpetualInventoryCrafting implements IInventory, IBlobsWrapper {
+public class PerpetualInventoryCrafting implements IInventory, IBlobsWrapper, INBTWrapper {
 
 	private final GenericTile tile;
 	public NonNullList<ItemStack> stacksList; // No final modifier, for reading
 												// and writing changes to packet
 												// in the network.
-	public final int width;
-	public final int height;
+	public int width;
+	public int height;
 	public Container eventHandler; // This is public because when you create a
 									// new instance of this in the tile, you
 									// will have to create a new instance of the
@@ -184,11 +186,31 @@ public class PerpetualInventoryCrafting implements IInventory, IBlobsWrapper {
 	@Override
 	public void loadBlobsTickets(EligiblePacketBuffer packet) throws IOException {
 		this.stacksList = packet.readItemStacks();
+		this.width = packet.readInt();
+		this.height = packet.readInt();
 	}
 
 	@Override
 	public void saveBlobsTickets(EligiblePacketBuffer packet) throws IOException {
 		packet.writeItemStacks(this.stacksList);
+		packet.writeInt(this.width);
+		packet.writeInt(this.height);
+	}
+
+	/* INBTWrapper */
+	@Override
+	public void readFromNBT(NBTTagCompound compound) {
+		ItemStackHelper.loadAllItems(compound, this.stacksList);
+		this.width = compound.getInteger("Width");
+		this.height = compound.getInteger("Height");
+	}
+
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		ItemStackHelper.saveAllItems(compound, this.stacksList);
+		compound.setInteger("Width", this.width);
+		compound.setInteger("Height", this.height);
+		return compound;
 	}
 
 }
